@@ -6,6 +6,7 @@ public class Spawner : MonoBehaviour
 {
 	public GameObject spawnLocation;
 	public GameObject spawnedObject;
+
 	float x;
 	float y;
 	float returnX;
@@ -34,7 +35,7 @@ public class Spawner : MonoBehaviour
 	}
 	void OnMouseDrag()
 	{
-		transform.position = Camera.main.ScreenToWorldPoint (new Vector3 (x, y, 0.6f));
+		transform.position = Camera.main.ScreenToWorldPoint (new Vector3 (x, y, 0.06f));
 	}
 
 	void OnMouseUp()
