@@ -18,6 +18,7 @@ public class receptorScript : MonoBehaviour
 			ExternalReceptorProperties objProps = (ExternalReceptorProperties)this.GetComponent("ExternalReceptorProperties");
 			objProps.isActive = false;
 			other.GetComponent<ExtraCellularProperties>().changeState(false);
+			other.GetComponent<Rigidbody2D>().isKinematic = true;
             StartCoroutine(transformReceptor(other));
             
             
