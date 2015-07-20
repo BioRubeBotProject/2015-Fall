@@ -35,7 +35,7 @@ public class Spawner : MonoBehaviour
 	}
 	void OnMouseDrag()
 	{
-		transform.position = Camera.main.ScreenToWorldPoint (new Vector3 (x, y, 0.06f));
+		transform.position = Camera.main.ScreenToWorldPoint (new Vector3 (x, y, 0.6f));
 	}
 
 	void OnMouseUp()

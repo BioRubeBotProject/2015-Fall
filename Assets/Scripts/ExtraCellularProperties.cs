@@ -20,8 +20,6 @@ public class ExtraCellularProperties : MonoBehaviour
         {
             this.allowMovement = false;
             this.GetComponent<ReceptorPathfinding>().enabled = false;
-			//added 6/18/2015 E. Rogers - enable kinematic so object is unaffected by other collisions:
-			this.GetComponent<Rigidbody2D>().isKinematic = true;
             foreach (Transform child in this.transform)
             {
                 if (child.name == "Extracellular Signal Body")
