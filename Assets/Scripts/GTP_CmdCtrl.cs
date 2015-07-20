@@ -11,16 +11,12 @@ public class GTP_CmdCtrl : MonoBehaviour
 	static float _max = 150f;
 	static float _min = -150f;
 
-	
-	public ParticleSystem DestructionEffect;
-	
 	private bool docked = false;		// g-protein position = receptor phosphate position?
 	private bool knownOffset = false;	// is the target phosphate left or right of receptor?
 	private bool spotted = false;		// found receptor phosphate?
 	private bool targeting = false;		// g-protein targeting phosphate?
 	
 	private float delay = 0f;
-	private float holdTime = 250f;		// fixed update runs every 20ms, hold time = 5 seconds
 	private float deltaDistance;		// distance between the receptor phosphate and the g-protein moving towards it
 	private float randomX, randomY;		// random number between MIN/MAX_X and MIN/MAX_Y
 	
@@ -34,62 +30,53 @@ public class GTP_CmdCtrl : MonoBehaviour
 
 
 
-	private void Start()/*constructor*/
+	private void Start()
 	{
-		//initialize:
-		closestTarget = transform;
-		closestGTP = transform;
 		lastPosition = transform.position;			
 	}
-	public void FixedUpdate() /*main*/
+	public void FixedUpdate() 
 	{
-		if (Time.timeScale > 0 && !docked)
-		{ 
-			if (!targeting)
-			{
-				delay = 0;  //reset time delay ()
-				spotted = GameObject.FindGameObjectWithTag ("DockedG_Protein");//search for a target object (objectA)
-				if (spotted)
-				{
-					closestTarget = FindClosest ("DockedG_Protein"); //find my closest target
-					closestGTP = FindClosest ("GTP");//find the closest object (of my type) to the target
-					if (transform == closestGTP) 
-						LockOn(); //if I'm closest, 'call dibs'
-				}//end if spotted
+		if (Time.timeScale > 0) {
+			if (!docked) {
+				if (!targeting) {
+					delay = 0;  //reset time delay 
+					spotted = GameObject.FindGameObjectWithTag ("DockedG_Protein");//search for a docked g-protein
+					if (spotted) {
+						closestTarget = FindClosest (transform , "DockedG_Protein"); //find my closest docked g-protein
+						closestGTP = FindClosest (closestTarget, "GTP");//am I the closest GTP?
+						if (transform == closestGTP) 
+							LockOn (); //if I'm closest, 'call dibs'
+					}//end if spotted
 				
-				else Roam ();//no target spotted
-			}//end if !targeting
-			
-			else /*target acquired*/
-			{
-				if (!knownOffset)/*is my target dock to the left or right*/
-				{
-					dockingPosition = GetOffset ();
-					knownOffset = true;
-				}/* end if unk */
-				else
-				{
-					//Debug.Log ("knownOffset: " + knownOffset);
-					if ((delay+=Time.deltaTime) < 5) //wait 5 seconds before moving toward target
-							Roam (); 
 					else
-						//Debug.Log("move");
-						docked = ProceedToTarget ();//head towards and dock with target
-				}
-			}//end targeting
-		}//end running and not docked
+						Roam ();//no target spotted
+				}//end if !targeting
+			
+				else { /*target acquired*/
+					if (!knownOffset) {/*is my target dock to the left or right*/
+						dockingPosition = GetOffset ();
+						knownOffset = true;
+					}/* end if unk */
+					else {
+						if ((delay += Time.deltaTime) < 5) //wait 5 seconds before moving toward target
+							Roam ();
+						else
+							docked = ProceedToTarget ();//head towards and dock with target
+					}
+				}//end targeting
+			}//end running and not docked
 		
-		else if (transform.tag != "dockedGTP") /*docked*/
-		{ 
-			//throw in another position reset to compensate for any late hits
-			transform.position = GetOffset();
-			Cloak();//retag objects for future reference
-		}
-	}//END FIXED UPDATE
+		else if (transform.tag != "DockedGTP") { /*docked*/ 
+				//throw in another position reset to compensate for any late hits
+				transform.position = GetOffset ();
+				Cloak ();//retag objects for future reference
+			}
+		}//END FIXED UPDATE
+	}
 
 
 	private void Roam()
-	{
+		{
 		randomX = Random.Range (_min,_max); //get random x vector coordinate
 		randomY = Random.Range (_min, _max); //get random y vector coordinate
 		//apply a force to the object in direction (x,y):
@@ -98,9 +85,8 @@ public class GTP_CmdCtrl : MonoBehaviour
 
 
 
-	private Transform FindClosest(string objTag)
+	private Transform FindClosest(Transform my, string objTag)
 	{
-		//Debug.Log ("Enter FindClosest - objTag = " + objTag);
 		float distance = Mathf.Infinity; //initialize distance to 'infinity'
 		
 		GameObject[] gos; //array of gameObjects to evaluate
@@ -112,7 +98,7 @@ public class GTP_CmdCtrl : MonoBehaviour
 		foreach (GameObject go in gos)
 		{	
 			//calculate square magnitude between objects
-			Vector3 diff = transform.position - go.transform.position;
+			Vector3 diff = my.position - go.transform.position;
 			float curDistance = diff.sqrMagnitude;
 			if (curDistance < distance)
 			{
@@ -120,7 +106,6 @@ public class GTP_CmdCtrl : MonoBehaviour
 				distance = curDistance;//update closest distance
 			}
 		}
-		//Debug.Log ("Exit - closestObject.tag = "+closestObject.tag);
 		return closestObject.transform;
 	}//END FIND CLOSEST
 
@@ -130,18 +115,15 @@ public class GTP_CmdCtrl : MonoBehaviour
 	private void LockOn()
 	{
 		targeting = true;
-		transform.tag = "targetingG_protein";
-		closestTarget.tag = "G_ProteinTarget";
+		transform.tag = "Targeting";
+		closestTarget.tag = "Target";
 	}
 
 
 
 	private Vector3 GetOffset()
 	{	
-
-		//Debug.Log (closestTarget.GetChild (0).tag);
-		//Debug.Log (closestTarget.position);
-		if (closestTarget.GetChild(0).tag == "left")
+		if (closestTarget.GetChild(0).tag == "Left")
 			return closestTarget.position + new Vector3 (-0.86f, 0.13f, 0);
 		else
 			return closestTarget.position + new Vector3 (0.86f, 0.13f, 0);
@@ -173,10 +155,9 @@ public class GTP_CmdCtrl : MonoBehaviour
 
 	private void Cloak()
 	{
-		//Debug.Log (closestTarget.tag);
-		closestTarget.tag = "occupiedG_Protein";
-		//Debug.Log (closestTarget.tag);
-		transform.tag = "dockedGTP";
+		closestTarget.tag = "OccupiedG_Protein";
+		transform.tag = "DockedGTP";
+		closestTarget = null;
 	}
 
 }

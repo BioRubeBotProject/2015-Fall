@@ -1,4 +1,7 @@
 #######Files#######
 *.meta
+.metadata
 ######Folders######
 [Oo]bj
+[Tt]emp
+[Cc]ache

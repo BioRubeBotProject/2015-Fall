@@ -1,14 +1,18 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-//Updated 6/27/2015 - E. Rogers
-//Lines 20-21:  Disable ATP collider while dropping off a phosphate
-//Lines 29-30:  Enable the ATP collider once phosphate dropped off
-//Lines 27-32:  Change receptor leg tags (referenced in moveG_Protein_Alt.cs)
+//Updated 6/27/2015
+//Lines 24-25:  Disable ATP collider while dropping off a phosphate
+//Lines 34-35:  Enable the ATP collider once phosphate dropped off
+//Lines 38-43:  Change receptor leg tags (referenced in G_ProteinCmdCtrl.cs)
+
+//Updated 6/29/2015
+//Line 44:  Added call to IEnumerator co-routine 'Explode'
+//Lines 47-65:  Added 'Explode' to destroy ATP after dropping phosphate at the receptor
 
 public class ReceptorLegScript : MonoBehaviour {
 
-	public ParticleSystem DestructionEffect;
+	public ParticleSystem destructionEffect;
 
 	private IEnumerator OnTriggerEnter2D(Collider2D other)
 	{
@@ -34,17 +38,17 @@ public class ReceptorLegScript : MonoBehaviour {
 			//code added to identify a 'left' receptor phosphate for G-protein docking
 			//if it is a left phosphate, G-protein must rotate to dock
 			//NOTE: EACH PHOSPHATE ATTACHED TO A RECEPTOR IS NOW TAGGED AS "receptorPhosphate"
-			tail.transform.tag = "receptorPhosphate";
+			tail.transform.tag = "ReceptorPhosphate";
 			if (transform.name == "_InnerReceptorFinalLeft")
-				tail.transform.GetChild(0).tag = "left";
-			StartCoroutine(Explode (other.gameObject));
+				tail.transform.GetChild(0).tag = "Left";
+			StartCoroutine(Explode (other.gameObject)); //self-destruct after 3 seconds
 		}
 	}
 	private IEnumerator Explode(GameObject other)
 	{
 		yield return new WaitForSeconds (3f);
 		//Instantiate our one-off particle system
-		ParticleSystem explosionEffect = Instantiate(DestructionEffect) as ParticleSystem;
+		ParticleSystem explosionEffect = Instantiate(destructionEffect) as ParticleSystem;
 		explosionEffect.transform.position = other.transform.position;
 		
 		//play it
@@ -57,7 +61,5 @@ public class ReceptorLegScript : MonoBehaviour {
 		
 		//destroy our game object
 		Destroy(other.gameObject);
-		
 	}
-
 }

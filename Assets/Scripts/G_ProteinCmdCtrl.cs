@@ -9,7 +9,7 @@ public class G_ProteinCmdCtrl : MonoBehaviour
 	private static float _min = -100f;
 		
 	public GameObject GDP, childGDP = null;	// for use creating a child of this object
-	public ParticleSystem DestructionEffect;
+	public ParticleSystem destructionEffect;
 
 	private bool docked = false;		// g-protein position = receptor phosphate position?
 	private bool knownOffset = false;	// is the target phosphate left or right of receptor?
@@ -39,23 +39,22 @@ public class G_ProteinCmdCtrl : MonoBehaviour
 		childGDP.GetComponent<CircleCollider2D> ().enabled = false;
 		childGDP.GetComponent<Rigidbody2D> ().isKinematic = true;
 		childGDP.transform.parent = transform;
-		//transform.GetChild (2).GetComponent<SpriteRenderer> ().color = Color.white;
-		//transform.GetChild (1).GetComponent<SpriteRenderer> ().color = Color.blue;
+		transform.GetChild (2).GetComponent<SpriteRenderer> ().color = Color.white;
+		transform.GetChild (3).GetComponent<SpriteRenderer> ().color = Color.white;
 	}
 
 
 	private void FixedUpdate()
 	{
 
-		if (Time.timeScale > 0) {
-			if (!docked && !nowHaveGTP) { // G-protein is not docked and does not have a GTP 
-				if (!targeting) { // no target in range
-					delay = 0;  // reset time delay
-					spotted = GameObject.FindGameObjectWithTag ("receptorPhosphate");// any targets?
+		if (Time.timeScale > 0 && !docked && !nowHaveGTP ) { 
+		// The game is running, the g-protein has not 'docked' with a receptor phosphate, and the g-protein is not bound to a GTP
+			if (!targeting) { // if not currently targeting -> search for a target
+					delay = 0;  // reset time delay (to be used when delaying 'ProceedToTarget')
+					spotted = GameObject.FindGameObjectWithTag ("ReceptorPhosphate");// any targets?
 					if (spotted) {
-
-						closestTarget = FindClosest (transform, "receptorPhosphate"); // find my closest target
-						closestG_Protein = FindClosest (closestTarget, "G_Protein");// anybody closer?
+						closestTarget = FindClosest (transform, "ReceptorPhosphate"); // find my closest target
+						closestG_Protein = FindClosest (closestTarget, "G_Protein");// find closest g-protein to that target
 						if (gameObject.transform == closestG_Protein) // if I'm closest
 							LockOn(); // call dibs
 					}/* end if spotted */
@@ -76,28 +75,25 @@ public class G_ProteinCmdCtrl : MonoBehaviour
 						else
 						{
 							docked = ProceedToTarget();// proceed to target
-							if (docked) delay = 0;
+							if (docked) delay = 0; // reset delay (later used to delay undocking)
 						}
 
 					}/* end proceed to target*/
 				} /* end target acquired */
-			}/* end not docked and does not have GTP */
+			}/* end running, not docked and does not have GTP */
+
 			else if (stillHaveGDP)// now docked -> release GDP
 			{
-				Cloak();//retag objects for future reference
+				this.Cloak();//retag objects for future reference
 				StartCoroutine (ReleaseGDP ());
-				StartCoroutine (Explode ()); //Destroy GDP
+				StartCoroutine (DestroyObj ()); //Destroy GDP
 			} 
-			else if (transform.tag == "occupiedG_Protein"){
-				Debug.Log (delay);
-				if ((delay += Time.deltaTime) > 5) //wait at least 5 seconds before proceeding to target
+			else if (transform.tag == "OccupiedG_Protein"){
+				if ((delay += Time.deltaTime) > 5) //wait at least 5 seconds before undocking
 					Undock ();
 			}
 			else Roam ();
-		}/* end running (timeScale > 0) */
 	}/* end Fixed Update */	
-
-
 
 
 	private void Roam()
@@ -107,7 +103,6 @@ public class G_ProteinCmdCtrl : MonoBehaviour
 		//apply a force to the object in direction (x,y):
 		GetComponent<Rigidbody2D> ().AddForce (new Vector2(randomX, randomY), ForceMode2D.Force);
 	}/* end Roam */
-
 
 
 	private Transform FindClosest(Transform my, string objTag)
@@ -135,25 +130,25 @@ public class G_ProteinCmdCtrl : MonoBehaviour
 	}/* end FindClosest */
 
 
-
-
 	private void LockOn()
 	{
 		targeting = true;
-		transform.tag = "targeting";
-		closestTarget.tag = "target";
+		transform.tag = "Targeting";
+		closestTarget.tag = "Target";
 	}/* end LockOn */
+
 
 	private Vector3 GetOffset()
 	{
-		if (closestTarget.GetChild(0).tag == "left")
+		if (closestTarget.GetChild(0).tag == "Left")
 		{
-			transform.GetChild(0).tag = "left"; //tag left G-Protein for GTP reference
+			transform.GetChild(0).tag = "Left"; //tag left G-Protein for GTP reference
 			return closestTarget.position + new Vector3 (-0.9f, -0.16f, 0);
 		}
 		else
 			return closestTarget.position + new Vector3 (0.9f, -0.16f, 0);
 	}/* end GetOffset */
+
 
 	private bool ProceedToTarget()
 	{
@@ -173,17 +168,23 @@ public class G_ProteinCmdCtrl : MonoBehaviour
 		}
 		if (deltaDistance < _speed * Time.deltaTime){
 			transform.position = dockingPosition;
-			if (closestTarget.GetChild(0).tag == "left")
+			if (closestTarget.GetChild(0).tag == "Left")
 				transform.Rotate(180f,0,180f); //orientate protein for docking
 		}//end if close enough
 		return (transform.position==dockingPosition);
 	}/* end ProceedToTarget */
 
+
 	private void Cloak()
 	{
-		closestTarget.tag = "OccupiedReceptor";
-		transform.tag = "DockedG_Protein";
+		if (closestTarget != null) {
+			closestTarget.tag = "OccupiedReceptor";
+		}
+		if (transform != null) {
+			transform.tag = "DockedG_Protein";
+		}
 	} /* end cloak */
+
 
 	private IEnumerator ReleaseGDP ()
 	{
@@ -193,30 +194,27 @@ public class G_ProteinCmdCtrl : MonoBehaviour
 		childGDP.transform.parent = null;
 		childGDP.transform.GetComponent<Rigidbody2D> ().isKinematic = false;
 		childGDP.transform.GetComponent<CircleCollider2D> ().enabled = true;
-		//transform.GetChild (1).GetComponent<SpriteRenderer> ().color = Color.red;
-		//transform.GetChild (3).GetComponent<SpriteRenderer> ().color = Color.red;
 	} /* end ReleaseGDP */
+
 
 	private void Undock()
 	{
-		//yield return new WaitForSeconds (3f);
 		transform.GetComponent<Rigidbody2D>().isKinematic = false;
 		transform.GetComponent<BoxCollider2D>().enabled = true;
 		docked = false;
 		targeting = false;
 		nowHaveGTP = true;
-		transform.tag = "freeG_Protein";
-		closestTarget.tag = "receptorPhosphate";
+		transform.tag = "FreeG_Protein";
+		closestTarget.tag = "ReceptorPhosphate";
 		closestTarget = null;
-		//transform.GetChild (1).GetComponent<SpriteRenderer> ().color = Color.gray;
 	}/* end Undock */
 
 
-	private IEnumerator Explode()
+	private IEnumerator DestroyObj()
 	{
 		yield return new WaitForSeconds (6f);
 		//Instantiate our one-off particle system
-		ParticleSystem explosionEffect = Instantiate(DestructionEffect) as ParticleSystem;
+		ParticleSystem explosionEffect = Instantiate(destructionEffect) as ParticleSystem;
 		explosionEffect.transform.position = childGDP.transform.position;
 		
 		//play it
@@ -229,5 +227,5 @@ public class G_ProteinCmdCtrl : MonoBehaviour
 		
 		//destroy our game object
 		Destroy(childGDP.gameObject);
-	}/* end Explode */
+	}/* end DestroyObj */
 }

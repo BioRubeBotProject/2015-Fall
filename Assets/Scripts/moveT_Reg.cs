@@ -1,97 +1,20 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class moveT_Reg : MonoBehaviour {
+public class moveT_Reg : MonoBehaviour
+{
+	private Vector2 randomDirection;	//new direction vector
+	public float maxX, maxY, minX, minY;//min/max vector values
+	private float randomX, randomY;		//random number between minX/maxX and minY/maxY
 
-
-	#region Public Fields + Properties + Events + Delegates + Enums
-	
-	public bool displayPath = true;
-	public float maxHeadingChange = 60;
-	public Transform SightEnd;
-	public Transform sightStart;
-	public int speed = 100;
-	public bool spotted = false;
-	public bool droppedOff = false;
-	#endregion Public Fields + Properties + Events + Delegates + Enums
-	
-	#region Private Fields + Properties + Events + Delegates + Enums
-	
-	private float heading;
-	private GameObject[] myFoundObjs;
-	private GameObject myTarget;
-	
-	#endregion Private Fields + Properties + Events + Delegates + Enums
-	
-	#region Private Methods
-	
-	private void Raycasting()
+	public void FixedUpdate() //runs every 20ms
 	{
-		//while (true) {
-		int x = 0;
-		myFoundObjs = GameObject.FindGameObjectsWithTag("ReceptorLeg");
-		while (x < myFoundObjs.Length && myFoundObjs[x].GetComponent<ReceptorLegProperties>().isActive == false)
+		if (Time.timeScale > 0)// if simulation is running
 		{
-			x++;
-		}
-		
-		int count = myFoundObjs.GetUpperBound(0);
-		
-		if (x <= count) {
-			if (myFoundObjs [x].GetComponent<ReceptorLegProperties> ().isActive == true) {
-				//Debug.Log("We found a receptor!");
-				sightStart = myFoundObjs [x].transform;
-				transform.position += transform.up * Time.deltaTime * speed;
-				if (displayPath == true) {
-					Debug.DrawLine (sightStart.position, SightEnd.position, Color.green);
-				}
-				spotted = Physics2D.Linecast (sightStart.position, SightEnd.position);
-				
-				
-				Quaternion rotation = Quaternion.LookRotation (SightEnd.position - sightStart.position, sightStart.TransformDirection (Vector3.right));
-				transform.rotation = new Quaternion (0, 0, rotation.z, rotation.w);
-			}
-		} 
-		else {
-			sightStart = null;
-			spotted = false;
+				randomX = Random.Range (minX, maxX); //get random x vector coordinate
+				randomY = Random.Range (minY, maxY); //get random y vector coordinate
+				//apply a force to the object in direction (x,y)
+				GetComponent<Rigidbody2D> ().AddForce (new Vector2 (randomX, randomY), ForceMode2D.Force);
 		}
 	}
-	
-	private void Roam()
-	{
-		if (Time.timeScale != 0) {
-			transform.position += transform.up * Time.deltaTime * 10;
-			var floor = Mathf.Clamp (heading - maxHeadingChange, 0, 360);
-			var ceil = Mathf.Clamp (heading + maxHeadingChange, 0, 360);
-			heading = Random.Range (floor, ceil);
-			transform.eulerAngles = new Vector3 (0, 0, heading);
-		}
-	}
-	
-	// Use this for initialization 
-	private void Start()
-	{
-		var floor = Mathf.Clamp(heading - maxHeadingChange, 0, 360);
-		var ceil = Mathf.Clamp(heading + maxHeadingChange, 0, 360);
-		heading = Random.Range(floor, ceil);
-	}
-	
-	// Update is called once per frame 
-	private void Update()
-	{
-		if (droppedOff) {
-			spotted = false;
-		}
-		else{
-			Raycasting ();
-		}
-		if (!spotted )
-		{
-			Roam();
-		}
-	}
-	
-	#endregion Private Methods
-
 }

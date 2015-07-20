@@ -83,10 +83,10 @@ public class ATPproperties : MonoBehaviour {
 			if (Quaternion.Angle(transform.rotation,rotation)==0 ) {
 				//Debug.Log("And I spun around for awhile!!");
 				spin = false;
-			
+
 			}
 		}
 	}
-
+	
 	#endregion Private Methods
 }
