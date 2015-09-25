@@ -1,9 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-using UnityEngine;
-using System.Collections;
-
 public class GTP_CmdCtrl: MonoBehaviour
 {
 
@@ -35,7 +32,7 @@ public class GTP_CmdCtrl: MonoBehaviour
 			
 			if (!targeting)//Look for a target
 			{
-				Roam.Roaming (this);
+				Roam.Roaming (this.gameObject);
 				openTarget = Roam.FindClosest (transform, "DockedG_Protein");
 				if (openTarget != null)
 				{
@@ -48,7 +45,7 @@ public class GTP_CmdCtrl: MonoBehaviour
 			else if (!docked)
 			{
 				if ((delay += Time.deltaTime) < 5)//wait 5 seconds before proceeding to target
-					Roam.Roaming (this);
+					Roam.Roaming (this.gameObject);
 				else docked = ProceedToTarget();
 				if (docked)	Cloak ();
 			}
@@ -87,7 +84,7 @@ public class GTP_CmdCtrl: MonoBehaviour
 		transform.position = Vector2.MoveTowards (transform.position, dockingPosition, _speed *Time.deltaTime);
 		
 		if (!docked && Vector2.Distance (transform.position, lastPosition) < _speed * Time.deltaTime)
-			Roam.Roaming (this);//if I didn't move...I'm stuck.  Give me a push
+			Roam.Roaming (this.gameObject);//if I didn't move...I'm stuck.  Give me a push
 		lastPosition = transform.position;//breadcrumb trail
 		//check to see how close to the g-protein and disable collider when close
 		deltaDistance = Vector3.Distance (transform.position, dockingPosition);

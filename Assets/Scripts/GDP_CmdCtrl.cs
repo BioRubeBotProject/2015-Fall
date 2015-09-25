@@ -12,7 +12,13 @@ public class GDP_CmdCtrl : MonoBehaviour {
 	
 	// Update is called once per frame
 	void FixedUpdate () {
-		Roam.Roaming ( this );
+		if (tag == "ReleasedGDP") {
+			tag = "DyingGDP";
+			StartCoroutine (ReleasingGDP ());
+			StartCoroutine (DestroyGDP ()); //Destroy GDP
+		}
+
+		Roam.Roaming ( this.gameObject );
 	}
 
 	//	ReleasingGDP waits for 3 seconds after docking before actually releasing the GDP  */

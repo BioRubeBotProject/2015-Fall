@@ -5,7 +5,8 @@ public class G_ProteinCmdCtrl : MonoBehaviour
 {
 	private static float _speed = 5f;	
 		
-	public GameObject GDP, childGDP = null;		// for use creating a child of this object
+	public GameObject GDP;				// for use creating a child of this object
+	private GameObject childGDP = null;
 
 	private bool docked = false;		// does g-protein position = receptor phosphate position
 	private bool roaming = false;		// is g-protein free to roam about with GTP in tow
@@ -65,7 +66,6 @@ public class G_ProteinCmdCtrl : MonoBehaviour
 			}
 			if (haveGTP && !roaming && (delay+=Time.deltaTime) > 2) {//wait 2 seconds before undocking
 				Undock ();
-				delay = 0;
 			}
 			else if ( haveGTP && roaming ) {
 				GameObject temp = Roam.FindClosest (transform, "Kinase");
@@ -78,15 +78,15 @@ public class G_ProteinCmdCtrl : MonoBehaviour
 					
 				} 
 				else if ( myTarget ) {
-					Roam.Roaming (this);
+					Roam.Roaming (this.gameObject);
 				}
 				else {
-					Roam.Roaming (this);
+					Roam.Roaming (this.gameObject);
 				}
 
 			}
 			else 
-				Roam.Roaming (this);
+				Roam.Roaming (this.gameObject);
 		}
 	}	
 
@@ -127,7 +127,7 @@ public class G_ProteinCmdCtrl : MonoBehaviour
 		//protein position will equal docking...doesn't seem to work, so it's hard coded below
 		transform.position = Vector2.MoveTowards (transform.position, dockingPosition, _speed *Time.deltaTime);
 		if (Vector2.Distance (transform.position, lastPosition) < _speed * Time.deltaTime)
-			Roam.Roaming (this);//if I didn't move...I'm stuck.  Give me a push
+			Roam.Roaming (this.gameObject);//if I didn't move...I'm stuck.  Give me a push
 		lastPosition = transform.position;//breadcrumb trail
 		//check to see how close to the phosphate and disable collider when close
 		deltaDistance = Vector3.Distance (transform.position, dockingPosition);
@@ -153,8 +153,7 @@ public class G_ProteinCmdCtrl : MonoBehaviour
 		delay = 0;
 		targeting = false;
 		transform.tag = "DockedG_Protein";
-		StartCoroutine (childGDP.GetComponent<GDP_CmdCtrl>().ReleasingGDP ());
-		StartCoroutine (childGDP.GetComponent<GDP_CmdCtrl>().DestroyGDP ()); //Destroy GDP
+		childGDP.tag = "ReleasedGDP";
 	}
 
 //	Once a GTP has bound to the g-protein is released from the receptor phosphate

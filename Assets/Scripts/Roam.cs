@@ -5,11 +5,11 @@ using System.Collections;
 public class Roam : MonoBehaviour {
 	public static float _max = 150f;
 	public static float _min = -150f;
+	public static float _speed = 5.0f;
 
-	public static void Roaming<T>(T Obj) where T : MonoBehaviour {
+	public static void Roaming(GameObject Obj) {
 		if (Time.timeScale > 0)// if simulation is running
 		{
-			Vector2 randomDirection;	//new direction vector
 			float randomX, randomY;		//random number between minX/maxX and minY/maxY
 			randomX = Random.Range (_min,_max); //get random x vector coordinate
 			randomY = Random.Range (_min, _max); //get random y vector coordinate
@@ -27,8 +27,7 @@ public class Roam : MonoBehaviour {
 		return meetingPoint;
 	}
 
-	public static GameObject FindClosest(Transform my, string objTag)
-	{
+	public static GameObject FindClosest(Transform my, string objTag) {
 		float distance = Mathf.Infinity; //initialize distance to 'infinity'
 		
 		GameObject[] gos; //array of gameObjects to evaluate
@@ -50,4 +49,13 @@ public class Roam : MonoBehaviour {
 		}
 		return closestObject;
 	}/* end FindClosest */
+
+	public static bool ProceedToVector (GameObject obj, Vector3 approachVector) {
+		float step = _speed * Time.deltaTime;
+		Vector2 originalVector = obj.transform.position;
+		obj.transform.position = Vector3.MoveTowards (obj.transform.position, approachVector, step);
+
+
+		return (approachVector == obj.transform.position);
+	}
 }

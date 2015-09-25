@@ -10,6 +10,6 @@ public class T_RegCmdCtrl : MonoBehaviour {
 	
 	// Update is called once per frame
 	void FixedUpdate () {
-		Roam.Roaming (this);
+		Roam.Roaming (this.gameObject);
 	}
 }
