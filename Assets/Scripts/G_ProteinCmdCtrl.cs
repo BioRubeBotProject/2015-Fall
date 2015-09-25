@@ -68,11 +68,11 @@ public class G_ProteinCmdCtrl : MonoBehaviour
 				Undock ();
 			}
 			else if ( haveGTP && roaming ) {
-				GameObject temp = Roam.FindClosest (transform, "Kinase");
-				if( temp != null && !myTarget) {
-					temp.tag = "Kinase_Phase_2";
-					temp.GetComponent <KinaseCmdCtrl>().Get_G_Protein(this.gameObject);
-					myTarget = temp.transform;
+				GameObject Kinase = Roam.FindClosest (transform, "Kinase");
+				if( Kinase != null && !myTarget) {
+					Kinase.tag = "Kinase_Phase_2";
+					Kinase.GetComponent <KinaseCmdCtrl>().Get_G_Protein(this.gameObject);
+					myTarget = Kinase.transform;
 				}
 				if (myTarget && (delay += Time.deltaTime) >= 5) {
 					
@@ -138,8 +138,11 @@ public class G_ProteinCmdCtrl : MonoBehaviour
 		}
 		if (deltaDistance < _speed * Time.deltaTime){
 			transform.position = dockingPosition;
-			if (myTarget.GetChild(0).tag == "Left")
-				transform.Rotate(180.0f, 0f,180.0f); //orientate protein for docking
+			if (myTarget.GetChild(0).tag == "Left") {
+				//transform.Rotate(180.0f, 0.0f, 0.0f); //orientate protein for docking
+				//transform.Rotate(0.0f, 0.0f,180.0f);
+				childGDP.transform.position = childGDP.transform.position - (new Vector3(0.86f, 0.0f, 0.0f) * 2);
+			}
 		}
 		return (transform.position==dockingPosition);
 	}

@@ -12,18 +12,18 @@ public class TimeScale : MonoBehaviour {
 	public void PlayButton()
 	{
 		//Set TimeScale to 1, regardless of current state
-		Time.timeScale = 1;
+		Time.timeScale = 0.5f;
 	}
 
 	public void PauseButton()
 	{
-		if (Time.timeScale > 0)//Save our time scale to return to later, and then set to 0
-		{
+		if (Time.timeScale > 0) {//Save our time scale to return to later, and then set to 0
 			saveTimeScale = Time.timeScale;
 			Time.timeScale = 0;
 		} 
-		else 
+		else {
 			Time.timeScale = saveTimeScale;//Return the timeScale to the original value
+		}
 
 	}
 
@@ -33,7 +33,7 @@ public class TimeScale : MonoBehaviour {
 		//Depreciated comment, When TimeScale = 2, TimeScale will Scale to 4
 		//Any TimeScale >= 2, does not compute
 		//Change to Time.timeScale <= 2 to make maximum 4, currently allows objects to break through coliders on the membrane
-		if (Time.timeScale >= 1 && Time.timeScale < 2) {
+		if (Time.timeScale >= 0.5 && Time.timeScale < 2) {
 			Time.timeScale = Time.timeScale + Time.timeScale;
 		}
 		//Not user friendly TimeScale Modification

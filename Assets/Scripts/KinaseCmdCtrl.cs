@@ -10,12 +10,11 @@ public class KinaseCmdCtrl : MonoBehaviour
 	private float delay;
 
 	// Use this for initialization
-	void Start ()
-	{
+	void Start () {
 		midpointSet = false;
 		midpointAchieved [0] = false;
 		midpointAchieved [1] = false;
-		//active_G_Protein = null;
+		active_G_Protein = null;
 		delay = 0.0f;
 	}
 	
@@ -30,32 +29,29 @@ public class KinaseCmdCtrl : MonoBehaviour
 				if( !midpointSet) {
 					midpoint = Roam.CalcMidPoint(active_G_Protein,this.gameObject);
 					midpointSet = true;
-				}
-				else if( midpointSet ) {
-					if(!midpointAchieved [0] || !midpointAchieved[1]) {
+				} else if( midpointSet && ( !midpointAchieved[0] || !midpointAchieved[1]) ) {
+					if(!midpointAchieved[0]) {
 						Vector3 offset = new Vector3(2.0f,0.0f,0.0f); //later to change to more dynamic offset
-
-						if(!midpointAchieved[0]) {
-							/*if (Random.Range(0,3) == 1 ) {
-								Roam.Roaming (active_G_Protein);
-							}*/
-							midpointAchieved[0] = Roam.ProceedToVector( active_G_Protein, midpoint + offset );
+						if (Vector3.Distance (active_G_Protein.transform.position,midpoint) > 2.5f ) {
+							Roam.Roaming (active_G_Protein);
 						}
-						if(!midpointAchieved[1]) {
-							/*if (Random.Range(0,3) == 1 ) {
-								Roam.Roaming (this.gameObject);
-							}*/
-							midpointAchieved[1] = Roam.ProceedToVector( this.gameObject , midpoint - offset );
-						}
+						midpointAchieved[0] = Roam.ProceedToVector( active_G_Protein, midpoint + offset );
 					}
-					else {
 
+					if(!midpointAchieved[1]) {
+						Vector3 offset = new Vector3(2.0f,0.0f,0.0f); //later to change to more dynamic offset
+						if (Vector3.Distance (this.gameObject.transform.position,midpoint) > 2.5f) {
+							Roam.Roaming (this.gameObject);
+						}
+						midpointAchieved[1] = Roam.ProceedToVector( this.gameObject , midpoint - offset );
 					}
+				} else {
+					//Circle Each other until G_protein is above Kinase
 				}
 			}
-			else {
-				Roam.Roaming (this.gameObject) ;
-			}
+		}
+		else {
+			Roam.Roaming (this.gameObject) ;
 		}
 	}
 

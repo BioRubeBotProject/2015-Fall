@@ -52,10 +52,7 @@ public class Roam : MonoBehaviour {
 
 	public static bool ProceedToVector (GameObject obj, Vector3 approachVector) {
 		float step = _speed * Time.deltaTime;
-		Vector2 originalVector = obj.transform.position;
 		obj.transform.position = Vector3.MoveTowards (obj.transform.position, approachVector, step);
-
-
 		return (approachVector == obj.transform.position);
 	}
 }
