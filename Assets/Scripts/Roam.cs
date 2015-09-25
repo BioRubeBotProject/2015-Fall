@@ -26,4 +26,28 @@ public class Roam : MonoBehaviour {
 
 		return meetingPoint;
 	}
+
+	public static GameObject FindClosest(Transform my, string objTag)
+	{
+		float distance = Mathf.Infinity; //initialize distance to 'infinity'
+		
+		GameObject[] gos; //array of gameObjects to evaluate
+		GameObject closestObject = null;
+		//populate the array with the objects you are looking for
+		gos = GameObject.FindGameObjectsWithTag(objTag);
+		
+		//find the nearest object ('objectTag') to me:
+		foreach (GameObject go in gos)
+		{	
+			//calculate square magnitude between objects
+			Vector3 diff = my.position - go.transform.position;
+			float curDistance = diff.sqrMagnitude;
+			if (curDistance < distance)
+			{
+				closestObject = go; //update closest object
+				distance = curDistance;//update closest distance
+			}
+		}
+		return closestObject;
+	}/* end FindClosest */
 }
