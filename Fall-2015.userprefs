@@ -1,8 +1,12 @@
 ﻿<Properties>
-  <MonoDevelop.Ide.Workspace />
-  <MonoDevelop.Ide.Workbench ActiveDocument="..\objects\Assets\Standard Assets\Utility\WaypointProgressTracker.cs">
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="MonoDevelop.Default" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\moveKinase.cs">
     <Files>
-      <File FileName="..\objects\Assets\Standard Assets\Utility\WaypointProgressTracker.cs" Line="1" Column="1" />
+      <File FileName="Assets\Scripts\moveKinase.cs" Line="19" Column="3" />
+      <File FileName="Assets\Scripts\GTP_CmdCtrl.cs" Line="80" Column="2" />
+      <File FileName="Assets\Scripts\movePhosphate.cs" Line="1" Column="1" />
+      <File FileName="Assets\Scripts\moveT_Reg.cs" Line="1" Column="1" />
+      <File FileName="Assets\Scripts\moveGDP.cs" Line="22" Column="1" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
