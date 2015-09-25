@@ -5,8 +5,6 @@ public class G_ProteinCmdCtrl : MonoBehaviour
 {
 
 	private static float _speed = 5f;	
-	private static float _max = 100f;
-	private static float _min = -100f;
 		
 	public GameObject GDP, childGDP = null;	// for use creating a child of this object
 	public ParticleSystem destructionEffect;
@@ -47,65 +45,71 @@ public class G_ProteinCmdCtrl : MonoBehaviour
 	private void FixedUpdate()
 	{
 
-		if (Time.timeScale > 0 && !docked && !nowHaveGTP ) { 
-		// The game is running, the g-protein has not 'docked' with a receptor phosphate, and the g-protein is not bound to a GTP
+		if (Time.timeScale > 0 && !docked && !nowHaveGTP) { 
+			// The game is running, the g-protein has not 'docked' with a receptor phosphate, and the g-protein is not bound to a GTP
 			if (!targeting) { // if not currently targeting -> search for a target
-					delay = 0;  // reset time delay (to be used when delaying 'ProceedToTarget')
-					spotted = GameObject.FindGameObjectWithTag ("ReceptorPhosphate");// any targets?
-					if (spotted) {
-						closestTarget = FindClosest (transform, "ReceptorPhosphate"); // find my closest target
-						closestG_Protein = FindClosest (closestTarget, "G_Protein");// find closest g-protein to that target
-						if (gameObject.transform == closestG_Protein) // if I'm closest
-							LockOn(); // call dibs
-					}/* end if spotted */
+				delay = 0;  // reset time delay (to be used when delaying 'ProceedToTarget')
+				spotted = GameObject.FindGameObjectWithTag ("ReceptorPhosphate");// any targets?
+				if (spotted) {
+					closestTarget = FindClosest (transform, "ReceptorPhosphate").transform; // find my closest target
+					closestG_Protein = FindClosest (closestTarget, "G_Protein").transform;// find closest g-protein to that target
+					if (gameObject.transform == closestG_Protein) // if I'm closest
+						LockOn (); // call dibs
+				}/* end if spotted */
 					else
-						Roam ();// no target spotted			
-				} /* end if !targeting */
+					Roam.Roaming (this);// no target spotted			
+			} /* end if !targeting */
 				else { /*target acquired*/ 
-					if (!knownOffset) { // is my target dock to the left or right?
-						dockingPosition = GetOffset();
-						knownOffset = true;
-					}/* end if unk */
+				if (!knownOffset) { // is my target dock to the left or right?
+					dockingPosition = GetOffset ();
+					knownOffset = true;
+				}/* end if unk */
 					else { // I know where I'm going, give time for the ATP to clear area and destruct
-						if (delay < 5) //wait 5 seconds before proceeding to target
-						{
-							delay += Time.deltaTime;
-							Roam ();
-						}
-						else
-						{
-							docked = ProceedToTarget();// proceed to target
-							if (docked) delay = 0; // reset delay (later used to delay undocking)
-						}
+					if (delay < 5) { //wait 5 seconds before proceeding to target
+						delay += Time.deltaTime;
+						Roam.Roaming (this);
+					} else {
+						docked = ProceedToTarget ();// proceed to target
+						if (docked)
+							delay = 0; // reset delay (later used to delay undocking)
+					}
 
-					}/* end proceed to target*/
-				} /* end target acquired */
-			}/* end running, not docked and does not have GTP */
+				}/* end proceed to target*/
+			} /* end target acquired */
+		}/* end running, not docked and does not have GTP */
 
-			else if (stillHaveGDP)// now docked -> release GDP
-			{
-				this.Cloak();//retag objects for future reference
-				StartCoroutine (ReleaseGDP ());
-				StartCoroutine (DestroyObj ()); //Destroy GDP
-			} 
-			else if (transform.tag == "OccupiedG_Protein"){
-				if ((delay += Time.deltaTime) > 5) //wait at least 5 seconds before undocking
-					Undock ();
+			else if (stillHaveGDP) {// now docked -> release GDP
+			this.Cloak ();//retag objects for future reference
+			StartCoroutine (ReleaseGDP ());
+			StartCoroutine (DestroyObj ()); //Destroy GDP
+		} else if (transform.tag == "OccupiedG_Protein") {
+			if ((delay += Time.deltaTime) > 5){ //wait at least 5 seconds before undocking
+				Undock ();
+				delay = 0;
 			}
-			else Roam ();
+		} else if (nowHaveGTP == true) {
+			GameObject temp = FindClosest (transform, "Kinase");
+			if( temp != null && !closestTarget) {
+				temp.tag = "Kinase_Phase_2";
+				temp.GetComponent <KinaseCmdCtrl>().Get_G_Protein(this.gameObject);
+				closestTarget = temp.transform;
+			}
+			if (closestTarget && delay >= 5) {
+
+			} 
+			else if (closestTarget ) {
+				delay += Time.deltaTime;
+				Roam.Roaming (this);
+			}
+			else {
+				Roam.Roaming (this);
+			}
+		} else {
+			Roam.Roaming (this);
+		}
 	}/* end Fixed Update */	
 
-
-	private void Roam()
-	{
-		randomX = Random.Range (_min, _max); //get random x vector coordinate
-		randomY = Random.Range (_min, _max); //get random y vector coordinate
-		//apply a force to the object in direction (x,y):
-		GetComponent<Rigidbody2D> ().AddForce (new Vector2(randomX, randomY), ForceMode2D.Force);
-	}/* end Roam */
-
-
-	private Transform FindClosest(Transform my, string objTag)
+	private GameObject FindClosest(Transform my, string objTag)
 	{
 		float distance = Mathf.Infinity; //initialize distance to 'infinity'
 		
@@ -126,7 +130,7 @@ public class G_ProteinCmdCtrl : MonoBehaviour
 				distance = curDistance;//update closest distance
 			}
 		}
-		return closestObject.transform;
+		return closestObject;
 	}/* end FindClosest */
 
 
@@ -157,7 +161,7 @@ public class G_ProteinCmdCtrl : MonoBehaviour
 		transform.position = Vector2.MoveTowards (transform.position, dockingPosition, _speed *Time.deltaTime);
 
 		if (!docked && Vector2.Distance (transform.position, lastPosition) < _speed * Time.deltaTime)
-			Roam ();//if I didn't move...I'm stuck.  Give me a push (roam())
+			Roam.Roaming (this);//if I didn't move...I'm stuck.  Give me a push (roam())
 		lastPosition = transform.position;//breadcrumb trail
 		//check to see how close to the phosphate and disable collider when close
 		deltaDistance = Vector3.Distance (transform.position, dockingPosition);

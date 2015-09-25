@@ -8,8 +8,6 @@ public class GTP_CmdCtrl : MonoBehaviour
 {
 
 	static float _speed = 5f;	
-	static float _max = 150f;
-	static float _min = -150f;
 
 	private bool docked = false;		// g-protein position = receptor phosphate position?
 	private bool knownOffset = false;	// is the target phosphate left or right of receptor?
@@ -49,7 +47,7 @@ public class GTP_CmdCtrl : MonoBehaviour
 					}//end if spotted
 				
 					else
-						Roam ();//no target spotted
+						Roam.Roaming (this);//no target spotted
 				}//end if !targeting
 			
 				else { /*target acquired*/
@@ -59,7 +57,7 @@ public class GTP_CmdCtrl : MonoBehaviour
 					}/* end if unk */
 					else {
 						if ((delay += Time.deltaTime) < 5) //wait 5 seconds before moving toward target
-							Roam ();
+							Roam.Roaming (this);
 						else
 							docked = ProceedToTarget ();//head towards and dock with target
 					}
@@ -73,17 +71,6 @@ public class GTP_CmdCtrl : MonoBehaviour
 			}
 		}//END FIXED UPDATE
 	}
-
-
-	private void Roam()
-		{
-		randomX = Random.Range (_min,_max); //get random x vector coordinate
-		randomY = Random.Range (_min, _max); //get random y vector coordinate
-		//apply a force to the object in direction (x,y):
-		GetComponent<Rigidbody2D> ().AddForce (new Vector2(randomX, randomY), ForceMode2D.Force);
-	}//END ROAM
-
-
 
 	private Transform FindClosest(Transform my, string objTag)
 	{
@@ -109,17 +96,12 @@ public class GTP_CmdCtrl : MonoBehaviour
 		return closestObject.transform;
 	}//END FIND CLOSEST
 
-
-
-
 	private void LockOn()
 	{
 		targeting = true;
 		transform.tag = "Targeting";
 		closestTarget.tag = "Target";
 	}
-
-
 
 	private Vector3 GetOffset()
 	{	
@@ -129,9 +111,6 @@ public class GTP_CmdCtrl : MonoBehaviour
 			return closestTarget.position + new Vector3 (0.86f, 0.13f, 0);
 	}
 
-
-
-
 	private bool ProceedToTarget()
 	{
 		//Unity manual says if the distance between the two objects is < _speed * Time.deltaTime,
@@ -139,7 +118,7 @@ public class GTP_CmdCtrl : MonoBehaviour
 		transform.position = Vector2.MoveTowards (transform.position, dockingPosition, _speed *Time.deltaTime);
 		
 		if (!docked && Vector2.Distance (transform.position, lastPosition) < _speed * Time.deltaTime)
-			Roam ();//if I didn't move...I'm stuck.  Give me a push (roam())
+			Roam.Roaming (this);//if I didn't move...I'm stuck.  Give me a push (roam())
 		lastPosition = transform.position;//breadcrumb trail
 		//check to see how close to the phosphate and disable collider when close
 		deltaDistance = Vector3.Distance (transform.position, dockingPosition);
