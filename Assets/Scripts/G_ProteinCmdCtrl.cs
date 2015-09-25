@@ -6,7 +6,6 @@ public class G_ProteinCmdCtrl : MonoBehaviour
 	private static float _speed = 5f;	
 		
 	public GameObject GDP, childGDP = null;		// for use creating a child of this object
-	public ParticleSystem destructionEffect;	// 'poof' special effect for 'expended' GDP
 
 	private bool docked = false;		// does g-protein position = receptor phosphate position
 	private bool roaming = false;		// is g-protein free to roam about with GTP in tow
@@ -57,10 +56,12 @@ public class G_ProteinCmdCtrl : MonoBehaviour
 			}
 			else if (!docked && !haveGTP)
 			{
-				if ((delay += Time.deltaTime) > 5)//wait 5 seconds before proceeding to target
+				if ((delay += Time.deltaTime) > 5) {//wait 5 seconds before proceeding to target
 					docked = ProceedToTarget();
-				if (docked)
+				}
+				if (docked) {
 					ReleaseGDP();
+				}
 			}
 			if (haveGTP && !roaming && (delay+=Time.deltaTime) > 2) {//wait 2 seconds before undocking
 				Undock ();
@@ -73,11 +74,10 @@ public class G_ProteinCmdCtrl : MonoBehaviour
 					temp.GetComponent <KinaseCmdCtrl>().Get_G_Protein(this.gameObject);
 					myTarget = temp.transform;
 				}
-				if (myTarget && delay >= 5) {
+				if (myTarget && (delay += Time.deltaTime) >= 5) {
 					
 				} 
 				else if ( myTarget ) {
-					delay += Time.deltaTime;
 					Roam.Roaming (this);
 				}
 				else {
@@ -139,7 +139,7 @@ public class G_ProteinCmdCtrl : MonoBehaviour
 		if (deltaDistance < _speed * Time.deltaTime){
 			transform.position = dockingPosition;
 			if (myTarget.GetChild(0).tag == "Left")
-				transform.Rotate(180f,0,180f); //orientate protein for docking
+				transform.Rotate(180.0f, 0f,180.0f); //orientate protein for docking
 		}
 		return (transform.position==dockingPosition);
 	}
@@ -153,28 +153,8 @@ public class G_ProteinCmdCtrl : MonoBehaviour
 		delay = 0;
 		targeting = false;
 		transform.tag = "DockedG_Protein";
-		StartCoroutine (ReleasingGDP ());
-		StartCoroutine (DestroyGDP ()); //Destroy GDP
-	}
-
-//	ReleasingGDP waits for 3 seconds after docking before actually releasing the GDP  */
-	private IEnumerator ReleasingGDP ()
-	{
-		yield return new WaitForSeconds (3f);
-		childGDP.transform.parent = null;
-		childGDP.transform.GetComponent<Rigidbody2D> ().isKinematic = false;
-		childGDP.transform.GetComponent<CircleCollider2D> ().enabled = true;
-	} 
-//	6 seconds after the GDP is released it will be destroyed in a puff of smoke (of sorts)
-	private IEnumerator DestroyGDP()
-	{
-		yield return new WaitForSeconds (6f);
-		ParticleSystem explosionEffect = Instantiate(destructionEffect) as ParticleSystem;
-		explosionEffect.transform.position = childGDP.transform.position;
-		explosionEffect.loop = false;
-		explosionEffect.Play();
-		Destroy(explosionEffect.gameObject, explosionEffect.duration);
-		Destroy(childGDP.gameObject);
+		StartCoroutine (childGDP.GetComponent<GDP_CmdCtrl>().ReleasingGDP ());
+		StartCoroutine (childGDP.GetComponent<GDP_CmdCtrl>().DestroyGDP ()); //Destroy GDP
 	}
 
 //	Once a GTP has bound to the g-protein is released from the receptor phosphate
@@ -190,5 +170,6 @@ public class G_ProteinCmdCtrl : MonoBehaviour
 		transform.tag = "FreeG_Protein";
 		myTarget = null;
 		roaming = true;
+		delay = 0;
 	}/* end Undock */
 }
