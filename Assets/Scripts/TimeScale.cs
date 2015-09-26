@@ -12,18 +12,18 @@ public class TimeScale : MonoBehaviour {
 	public void PlayButton()
 	{
 		//Set TimeScale to 1, regardless of current state
-		Time.timeScale = 1;
+		Time.timeScale = 1.0f;
 	}
 
 	public void PauseButton()
 	{
-		if (Time.timeScale > 0)//Save our time scale to return to later, and then set to 0
-		{
+		if (Time.timeScale > 0) {//Save our time scale to return to later, and then set to 0
 			saveTimeScale = Time.timeScale;
 			Time.timeScale = 0;
 		} 
-		else 
+		else {
 			Time.timeScale = saveTimeScale;//Return the timeScale to the original value
+		}
 
 	}
 

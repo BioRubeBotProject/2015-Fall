@@ -13,16 +13,12 @@ public class receptorScript : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.gameObject.tag == "ECP")
-        {
+        if (other.gameObject.tag == "ECP") {
 			ExternalReceptorProperties objProps = (ExternalReceptorProperties)this.GetComponent("ExternalReceptorProperties");
 			objProps.isActive = false;
 			other.GetComponent<ExtraCellularProperties>().changeState(false);
 			other.GetComponent<Rigidbody2D>().isKinematic = true;
             StartCoroutine(transformReceptor(other));
-            
-            
-
         }
     }
 

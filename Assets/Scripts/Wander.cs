@@ -19,8 +19,8 @@ public class Wander : MonoBehaviour
     private CharacterController controller;
 
     private float heading;
-    private Rigidbody2D rb;
-    private Vector3 targetRotation;
+    //private Rigidbody2D rb;
+    //private Vector3 targetRotation;
 
     #endregion Private Fields + Properties + Events + Delegates + Enums
 
@@ -28,7 +28,7 @@ public class Wander : MonoBehaviour
 
     private void Awake()
     {
-        rb = GetComponent<Rigidbody2D>();
+        //rb = GetComponent<Rigidbody2D>();
 
         // Set random initial rotation 
         heading = Random.Range(0, 360);
@@ -64,7 +64,7 @@ public class Wander : MonoBehaviour
         var floor = Mathf.Clamp(heading - maxHeadingChange, 0, 360);
         var ceil = Mathf.Clamp(heading + maxHeadingChange, 0, 360);
         heading = Random.Range(floor, ceil);
-        targetRotation = new Vector3(0, 0, heading);
+        //targetRotation = new Vector3(0, 0, heading);
     }
 
     #endregion Private Methods
