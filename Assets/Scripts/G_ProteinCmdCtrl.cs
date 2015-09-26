@@ -42,52 +42,50 @@ public class G_ProteinCmdCtrl : MonoBehaviour
 	{
 		if (!haveGTP && transform.tag == "OccupiedG_Protein")
 			haveGTP = true;
-
-		if (Time.timeScale > 0)
-		{ 
-			if (!targeting && !docked && !haveGTP )//Look for a target
+		
+		if (!targeting && !docked && !haveGTP )//Look for a target
+		{
+			openTarget = Roam.FindClosest (transform, "ReceptorPhosphate");
+			if (openTarget != null)
 			{
-				openTarget = Roam.FindClosest (transform, "ReceptorPhosphate");
-				if (openTarget != null)
-				{
-					myTarget = openTarget.transform;
-					dockingPosition = GetOffset ();
-					LockOn ();//call dibs
-				}
+				myTarget = openTarget.transform;
+				dockingPosition = GetOffset ();
+				LockOn ();//call dibs
 			}
-			else if (!docked && !haveGTP)
-			{
-				if ((delay += Time.deltaTime) > 5) {//wait 5 seconds before proceeding to target
-					docked = ProceedToTarget();
-				}
-				if (docked) {
-					ReleaseGDP();
-				}
-			}
-			if (haveGTP && !roaming && (delay+=Time.deltaTime) > 2) {//wait 2 seconds before undocking
-				Undock ();
-			}
-			else if ( haveGTP && roaming ) {
-				GameObject Kinase = Roam.FindClosest (transform, "Kinase");
-				if( Kinase != null && !myTarget) {
-					Kinase.tag = "Kinase_Phase_2";
-					Kinase.GetComponent <KinaseCmdCtrl>().Get_G_Protein(this.gameObject);
-					myTarget = Kinase.transform;
-				}
-				if (myTarget && (delay += Time.deltaTime) >= 5) {
-					
-				} 
-				else if ( myTarget ) {
-					Roam.Roaming (this.gameObject);
-				}
-				else {
-					Roam.Roaming (this.gameObject);
-				}
-
-			}
-			else 
-				Roam.Roaming (this.gameObject);
 		}
+		else if (!docked && !haveGTP)
+		{
+			if ((delay += Time.deltaTime) > 5) {//wait 5 seconds before proceeding to target
+				docked = ProceedToTarget();
+			}
+			if (docked) {
+				ReleaseGDP();
+			}
+		}
+		if (haveGTP && !roaming && (delay+=Time.deltaTime) > 2) {//wait 2 seconds before undocking
+			Undock ();
+		}
+		else if ( haveGTP && roaming ) {
+			GameObject Kinase = Roam.FindClosest (transform, "Kinase");
+			if( Kinase != null && !myTarget) {
+				delay = 0;
+				Kinase.tag = "Kinase_Prep_A";
+				Kinase.GetComponent <KinaseCmdCtrl>().Get_G_Protein(this.gameObject);
+				myTarget = Kinase.transform;
+			}
+			if (myTarget && (delay += Time.deltaTime) >= 5) {
+				
+			} 
+			else if ( myTarget ) {
+				Roam.Roaming (this.gameObject);
+			}
+			else {
+				Roam.Roaming (this.gameObject);
+			}
+
+		}
+		else 
+			Roam.Roaming (this.gameObject);
 	}	
 
 
