@@ -102,10 +102,10 @@ public class G_ProteinCmdCtrl : MonoBehaviour
 		{
 			//tag left G-Protein for GTP to reference in GTP_CmdCtrl.cs:
 			transform.GetChild(0).tag = "Left"; 
-			return myTarget.position + new Vector3 (-0.9f, -0.16f, 0);
+			return myTarget.position + new Vector3 (-0.9f, -0.16f, myTarget.position.z);
 		}
 		else
-			return myTarget.position + new Vector3 (0.9f, -0.16f, 0);
+			return myTarget.position + new Vector3 (0.9f, -0.16f, myTarget.position.z);
 	}
 
 /*	LockOn retags the target 'ReceptorPhosphate' to 'target' so it
