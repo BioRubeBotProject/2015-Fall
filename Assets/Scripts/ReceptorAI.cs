@@ -51,7 +51,7 @@ public class ReceptorAI : MonoBehaviour
     //Caching
     private Seeker seeker;
 
-    private float timeToMove;
+    //private float timeToMove;
 
     #endregion Private Fields + Properties + Events + Delegates + Enums
 
@@ -118,7 +118,7 @@ public class ReceptorAI : MonoBehaviour
 
     private void Move()
     {
-        timeToMove = Time.fixedTime + seekTime;
+        //timeToMove = Time.fixedTime + seekTime;
         //while (Time.fixedTime >= timeToMove)
         //{
         transform.position = new Vector3((speed * Time.deltaTime), 0, 0);
