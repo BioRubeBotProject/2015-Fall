@@ -18,6 +18,18 @@ public class Roam : MonoBehaviour {
 		}
 	}
 
+	public static void RoamingTandem(GameObject Obj1, GameObject Obj2, Vector3 Offset) {
+		if (Time.timeScale > 0)// if simulation is running
+		{
+			float randomX, randomY;		//random number between minX/maxX and minY/maxY
+			randomX = Random.Range (_min,_max); //get random x vector coordinate
+			randomY = Random.Range (_min, _max); //get random y vector coordinate
+			//apply a force to the object in direction (x,y):
+			Obj1.GetComponent<Rigidbody2D> ().AddForce (new Vector2(randomX, randomY), ForceMode2D.Force);
+			Obj2.transform.position = Obj1.transform.position + Offset;
+		}
+	}
+
 	public static Vector3 CalcMidPoint ( GameObject obj_1, GameObject obj_2 ) {
 		float[] temp = new float[2];
 		temp [0] = (obj_1.transform.position.x + obj_2.transform.position.x)/2.0f;
@@ -39,8 +51,7 @@ public class Roam : MonoBehaviour {
 		foreach (GameObject go in gos)
 		{	
 			//calculate square magnitude between objects
-			Vector3 diff = my.position - go.transform.position;
-			float curDistance = diff.sqrMagnitude;
+			float curDistance = Vector3.Distance(my.position,go.transform.position);
 			if (curDistance < distance)
 			{
 				closestObject = go; //update closest object

@@ -76,9 +76,6 @@ public class G_ProteinCmdCtrl : MonoBehaviour
 			if (myTarget && (delay += Time.deltaTime) >= 5) {
 				
 			} 
-			else if ( myTarget ) {
-				Roam.Roaming (this.gameObject);
-			}
 			else {
 				Roam.Roaming (this.gameObject);
 			}
@@ -172,4 +169,9 @@ public class G_ProteinCmdCtrl : MonoBehaviour
 		roaming = true;
 		delay = 0;
 	}/* end Undock */
+
+	public void resetTarget() {
+		myTarget = null;
+		delay = 0;
+	}
 }

@@ -64,17 +64,10 @@ public class Spawner : MonoBehaviour
 	// because each object has a certain "Z" height or depth associated with it. Also, since 
 	// the objects will be spawned at "camera height" the "+1" is so the object will be in front of 
 	// the camera instead of on the same level.
-	// 
-	//
-	// ISSUES FOR THE FUTURE:
-	// The "y + 60" coordinate was added by a previous team to keep object above the user's finger 
-	// when utilizing a touchscreen. There has to be a better way of doing that, such as testing to 
-	// see IF the user is using a touchscreen or not before adding an arbitrary number to the Y 
-	// coordinate. 
 	void OnMouseDrag()
 	{
 		guidePosition = Camera.main.ScreenToWorldPoint 
-			(new Vector3 (x, y + 60, spawnedObject.transform.position.z + 1));
+			(new Vector3 (x, y, spawnedObject.transform.position.z + 1));
 		
 		if(spawnedObject.name == "_ReceptorInactive" && cellMembrane != null) { RotateAndSnapObject(); }
 		else { transform.position = guidePosition; }    // move the object to the mouse position
