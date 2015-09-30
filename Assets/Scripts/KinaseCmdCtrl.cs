@@ -4,10 +4,12 @@ using System.Collections;
 public class KinaseCmdCtrl : MonoBehaviour
 {
 	private GameObject active_G_Protein;
+	public GameObject Kinase_P2;
 	private Vector3 midpoint;
 	private bool[] midpointAchieved = new bool[2];
 	private bool midpointSet;
 	private float delay;
+	private float timeoutForInteraction;
 
 	// Use this for initialization
 	void Start () {
@@ -16,43 +18,93 @@ public class KinaseCmdCtrl : MonoBehaviour
 		midpointAchieved [1] = false;
 		active_G_Protein = null;
 		delay = 0.0f;
+		timeoutForInteraction = 0.0f;
 	}
 	
 	// Update is called once per frame
 	void FixedUpdate ()
 	{
+		if (timeoutForInteraction > 15) {
+			active_G_Protein.GetComponent<G_ProteinCmdCtrl>().resetTarget();
+			this.GetComponent<PolygonCollider2D>().enabled = true;
+			active_G_Protein.GetComponent<BoxCollider2D>().enabled = true;
+			active_G_Protein = null;
+			midpointSet = false;
+			midpointAchieved [0] = midpointAchieved [1] = false;
+			delay = 0;
+			timeoutForInteraction = 0.0f;
+			tag = "Kinase";
+		}
+
 		if (tag == "Kinase") {
 			Roam.Roaming (this.gameObject);
-		}
-		else if (tag == "Kinase_Phase_2") {
-			if((delay += Time.deltaTime) >= 5.0f && active_G_Protein != null) {
-				if( !midpointSet) {
-					midpoint = Roam.CalcMidPoint(active_G_Protein,this.gameObject);
+		} else if (tag == "Kinase_Prep_A") {
+			if ((delay += Time.deltaTime) >= 5.0f && active_G_Protein != null) {
+				if (!midpointSet) {
+					midpoint = Roam.CalcMidPoint (active_G_Protein, this.gameObject);
 					midpointSet = true;
-				} else if( midpointSet && ( !midpointAchieved[0] || !midpointAchieved[1]) ) {
-					if(!midpointAchieved[0]) {
-						Vector3 offset = new Vector3(2.0f,0.0f,0.0f); //later to change to more dynamic offset
-						if (Vector3.Distance (active_G_Protein.transform.position,midpoint) > 2.5f ) {
-							Roam.Roaming (active_G_Protein);
-						}
-						midpointAchieved[0] = Roam.ProceedToVector( active_G_Protein, midpoint + offset );
-					}
-
-					if(!midpointAchieved[1]) {
-						Vector3 offset = new Vector3(2.0f,0.0f,0.0f); //later to change to more dynamic offset
-						if (Vector3.Distance (this.gameObject.transform.position,midpoint) > 2.5f) {
-							Roam.Roaming (this.gameObject);
-						}
-						midpointAchieved[1] = Roam.ProceedToVector( this.gameObject , midpoint - offset );
-					}
-				} else {
-					//Circle Each other until G_protein is above Kinase
+				} else if (ApproachMidpoint(new Vector3 (-2.0f, 0.0f, 0.0f), 2.5f)) {
+						delay = 0.0f;
+						midpointAchieved [0] = midpointAchieved [1] = false;
+						tag = "Kinase_Prep_B";
+				}
+			} else {
+				Roam.Roaming (this.gameObject);
+			}
+			timeoutForInteraction += Time.deltaTime;
+		} else if (tag == "Kinase_Prep_B") {
+			if (!midpointSet) {
+				midpoint = Roam.CalcMidPoint (active_G_Protein, this.gameObject);
+				midpointSet = true;
+			}
+			else if (ApproachMidpoint ( new Vector3 (0.0f, 1.0f, 0.0f), 1.75f)) {
+				midpointAchieved [0] = midpointAchieved [1] = false;
+				this.GetComponent<PolygonCollider2D>().enabled = false;
+				active_G_Protein.GetComponent<BoxCollider2D>().enabled = false;
+				tag = "Kinase_Prep_C";
+			}
+			timeoutForInteraction += Time.deltaTime;
+		} else if (tag == "Kinase_Prep_C") {
+			if(!midpointAchieved [0] || !midpointAchieved [1]){
+				midpointAchieved[0] = Roam.ProceedToVector(active_G_Protein,midpoint + new Vector3(0.0f,0.35f,0.0f));
+				midpointAchieved[1] = Roam.ProceedToVector(this.gameObject,midpoint + new Vector3(0.0f,-0.35f,0.0f));
+			}
+			if(midpointAchieved[0] && midpointAchieved[1]) {
+				if((delay += Time.deltaTime) >= 3) {
+					Instantiate(Kinase_P2,gameObject.transform.position, Quaternion.identity);
+					Destroy (gameObject);
+				}
+				else {
+					active_G_Protein.GetComponent<BoxCollider2D>().enabled = true;
+					Roam.RoamingTandem(active_G_Protein,this.gameObject,new Vector3 (0.0f, -0.70f, 0.0f));
 				}
 			}
+			timeoutForInteraction += Time.deltaTime;
+		}
+		else if ( tag == "Kinase_Phase_2" ) {
+			Roam.Roaming (this.gameObject);
 		}
 		else {
 			Roam.Roaming (this.gameObject) ;
 		}
+	}
+
+	private bool ApproachMidpoint (Vector3 Offset, float Restraint) {
+		if (!midpointAchieved [0]) {
+			midpointAchieved [0] = ApproachVector (active_G_Protein, midpoint, Offset, Restraint);
+		}
+	
+		if (!midpointAchieved [1]) {
+			midpointAchieved [1] = ApproachVector (this.gameObject, midpoint, -1 * Offset, Restraint);
+		}
+		return (midpointAchieved [0] && midpointAchieved [1]);
+	}
+
+	private bool ApproachVector(GameObject obj, Vector3 destination, Vector3 offset, float restraint) {
+		if (Vector3.Distance (obj.transform.position,destination) > restraint ) {
+			Roam.Roaming (obj);
+		}
+		return Roam.ProceedToVector( obj, destination + offset);
 	}
 
 	public void Get_G_Protein (GameObject obj) {

@@ -154,6 +154,7 @@
     <Compile Include="Assets\AstarPathfindingProject\changelog.cs" />
     <Compile Include="Assets\Scripts\ATPpathfinding.cs" />
     <Compile Include="Assets\Scripts\ATPproperties.cs" />
+    <Compile Include="Assets\Scripts\CellMembrane.cs" />
     <Compile Include="Assets\Scripts\DEPRECIATED\ATPscript.cs" />
     <Compile Include="Assets\Scripts\DEPRECIATED\moveGDP.cs" />
     <Compile Include="Assets\Scripts\DEPRECIATED\moveKinase.cs" />
