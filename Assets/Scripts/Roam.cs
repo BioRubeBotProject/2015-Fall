@@ -61,6 +61,13 @@ public class Roam : MonoBehaviour {
 		return closestObject;
 	}/* end FindClosest */
 
+	public static bool ApproachVector(GameObject obj, Vector3 destination, Vector3 offset, float restraint) {
+		if (Vector3.Distance (obj.transform.position, destination) > restraint) {
+			Roaming (obj);
+		}
+		return ProceedToVector (obj, destination + offset);
+	}
+
 	public static bool ProceedToVector (GameObject obj, Vector3 approachVector) {
 		float step = _speed * Time.deltaTime;
 		obj.transform.position = Vector3.MoveTowards (obj.transform.position, approachVector, step);
