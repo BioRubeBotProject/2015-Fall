@@ -622,13 +622,13 @@ public class AstarPathEditor : Editor {
 				updateCheckObject = null;
 				return false;
 			}
-			Debug.Log ("Got response\n" +updateCheckObject.text);
+			//Debug.Log ("Got response\n" +updateCheckObject.text);
 			UpdateCheckCompleted (updateCheckObject.text);
 			updateCheckObject = null;
 		}
 
 		if (System.DateTime.Compare (lastUpdateCheck.AddDays (updateCheckRate),System.DateTime.UtcNow) < 0) {
-			Debug.Log ("Checking For Updates... " + System.DateTime.UtcNow.ToString (System.Globalization.CultureInfo.InvariantCulture)+"\nA* Pathfinding Project");
+			//Debug.Log ("Checking For Updates... " + System.DateTime.UtcNow.ToString (System.Globalization.CultureInfo.InvariantCulture)+"\nA* Pathfinding Project");
 
 			bool use = AstarPath.active != null || GameObject.FindObjectOfType(typeof(AstarPath)) != null;
 			bool mecanim = false;
