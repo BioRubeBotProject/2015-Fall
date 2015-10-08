@@ -5,6 +5,7 @@ public class KinaseCmdCtrl : MonoBehaviour
 {
 	private GameObject active_G_Protein;
 	public GameObject Kinase_P2;
+	private Transform myTarget;
 	private Vector3 midpoint;
 	private bool[] midpointAchieved = new bool[2];
 	private bool midpointSet;
@@ -14,6 +15,7 @@ public class KinaseCmdCtrl : MonoBehaviour
 
 	// Use this for initialization
 	void Start () {
+		myTarget = null;
 		midpointSet = false;
 		midpointAchieved [0] = false;
 		midpointAchieved [1] = false;
@@ -26,27 +28,20 @@ public class KinaseCmdCtrl : MonoBehaviour
 	void FixedUpdate ()
 	{
 		if (timeoutForInteraction > timeoutMaxInterval) {
-			if(tag == "Kinase_Prep_A" || tag == "Kinase_Prep_B" || tag == "Kinase_Prep_C") {
-				active_G_Protein.GetComponent<G_ProteinCmdCtrl>().resetTarget();
-				this.GetComponent<PolygonCollider2D>().enabled = true;
-				active_G_Protein.GetComponent<BoxCollider2D>().enabled = true;
-				active_G_Protein = null;
-				midpointSet = false;
-				midpointAchieved [0] = midpointAchieved [1] = false;
-				delay = 0;
-				timeoutForInteraction = 0.0f;
-				tag = "Kinase";
+			if(tag == "Kinase_Prep_A" || tag == "Kinase_Prep_B") {
+				reset ();
 			}
 		}
 
 		if (tag == "Kinase") {
 			Roam.Roaming (this.gameObject);
 		} else if (tag == "Kinase_Prep_A" || tag == "Kinase_Prep_B") {
-			if ((delay += Time.deltaTime) >= 5.0f && active_G_Protein != null) {
+			if ((delay += Time.deltaTime) >= 5.0f) {
+			//if ((delay += Time.deltaTime) >= 5.0f && active_G_Protein != null) {
 				if (!midpointSet && tag == "Kinase_Prep_A") {
 					midpoint = Roam.CalcMidPoint (active_G_Protein, this.gameObject);
 					midpointSet = true;
-				} else if (ApproachMidpoint(setupVector(), setupRestraint())) {
+				} else if (Roam.ApproachMidpoint(active_G_Protein,this.gameObject,midpointAchieved,midpoint, setupVector(), setupRestraint())) {
 					setupNextPhase ();
 				}
 			} else {
@@ -72,10 +67,19 @@ public class KinaseCmdCtrl : MonoBehaviour
 			timeoutForInteraction += Time.deltaTime;
 		}
 		else if ( tag == "Kinase_Phase_2" ) {
-			Roam.Roaming (this.gameObject);
-		}
-		else {
-			Roam.Roaming (this.gameObject) ;
+			GameObject T_Reg = Roam.FindClosest (transform, "T_Reg");
+			if( T_Reg != null && !myTarget) {
+				delay = 0;
+				T_Reg.tag = "T_Reg_Prep_A";
+				T_Reg.GetComponent <T_RegCmdCtrl>().Get_Kinase_P2(this.gameObject);
+				myTarget = T_Reg.transform;
+			}
+			if (myTarget && (delay += Time.deltaTime) >= 5) {
+
+			} 
+			else {
+				Roam.Roaming (this.gameObject);
+			}
 		}
 	}
 
@@ -114,7 +118,7 @@ public class KinaseCmdCtrl : MonoBehaviour
 		}
 	}
 
-	private bool ApproachMidpoint (Vector3 Offset, float Restraint) {
+	/*private bool ApproachMidpoint (Vector3 Offset, float Restraint) {
 		if (!midpointAchieved [0]) {
 			midpointAchieved [0] = Roam.ApproachVector (active_G_Protein, midpoint, Offset, Restraint);
 		}
@@ -123,6 +127,23 @@ public class KinaseCmdCtrl : MonoBehaviour
 			midpointAchieved [1] = Roam.ApproachVector (this.gameObject, midpoint, -1 * Offset, Restraint);
 		}
 		return (midpointAchieved [0] && midpointAchieved [1]);
+	}*/
+
+	public void reset() {
+		active_G_Protein.GetComponent<G_ProteinCmdCtrl>().resetTarget();
+		this.GetComponent<PolygonCollider2D>().enabled = true;
+		active_G_Protein.GetComponent<BoxCollider2D>().enabled = true;
+		active_G_Protein = null;
+		midpointSet = false;
+		midpointAchieved [0] = midpointAchieved [1] = false;
+		delay = 0;
+		timeoutForInteraction = 0.0f;
+		tag = "Kinase";
+	}
+
+	public void resetTarget() {
+		myTarget = null;
+		delay = 0;
 	}
 
 	public void Get_G_Protein (GameObject obj) {
