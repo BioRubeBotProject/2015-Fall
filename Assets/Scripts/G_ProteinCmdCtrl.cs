@@ -7,7 +7,6 @@ public class G_ProteinCmdCtrl : MonoBehaviour
 		
 	public GameObject GDP;				// for use creating a child of this object
 	private GameObject childGDP = null;
-	private GameObject Kinase;
 
 	private bool docked = false;		// does g-protein position = receptor phosphate position
 	private bool roaming = false;		// is g-protein free to roam about with GTP in tow
@@ -67,17 +66,7 @@ public class G_ProteinCmdCtrl : MonoBehaviour
 			Undock ();
 		}
 		else if ( haveGTP && roaming ) {
-			if(Kinase == null) {
-				Kinase = Roam.FindClosest (transform, "Kinase");
-			}
-
-			if(Kinase != null || myTarget != null) {
-				Roam.FindAndWait(Kinase.GetComponent<KinaseCmdCtrl>(),this.gameObject,ref myTarget,ref delay,"Kinase_Prep_A");
-			}
-			else {
-				Roam.Roaming(this.gameObject);
-			}
-			/*GameObject Kinase = Roam.FindClosest (transform, "Kinase");
+			GameObject Kinase = Roam.FindClosest (transform, "Kinase");
 			if( Kinase != null && !myTarget) {
 				delay = 0;
 				Kinase.tag = "Kinase_Prep_A";
@@ -89,7 +78,7 @@ public class G_ProteinCmdCtrl : MonoBehaviour
 			} 
 			else {
 				Roam.Roaming (this.gameObject);
-			}*/
+			}
 
 		}
 		else 

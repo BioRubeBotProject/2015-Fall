@@ -46,10 +46,7 @@ public class GTP_CmdCtrl: MonoBehaviour
 			{
 				if ((delay += Time.deltaTime) < 5)//wait 5 seconds before proceeding to target
 					Roam.Roaming (this.gameObject);
-				else {
-					//docked = ProceedToTarget();
-					docked = Roam.ProceedToVector(this.gameObject,dockingPosition);
-				}
+				else docked = ProceedToTarget();
 				if (docked)	Cloak ();
 			}
 		}
@@ -62,9 +59,9 @@ public class GTP_CmdCtrl: MonoBehaviour
 	private Vector3 GetOffset()
 	{	
 		if (myTarget.GetChild(0).tag == "Left")
-			return myTarget.position + new Vector3 (-0.95f, 0.13f, 0);
+			return myTarget.position + new Vector3 (-0.86f, 0.13f, 0);
 		else
-			return myTarget.position + new Vector3 (0.95f, 0.13f, 0);
+			return myTarget.position + new Vector3 (0.86f, 0.13f, 0);
 	}
 	
 /*	LockOn retags the target 'DockedG_Protein' to 'Target' so it
@@ -104,10 +101,6 @@ public class GTP_CmdCtrl: MonoBehaviour
 //	Cloak retags objects for future reference
 	private void Cloak()
 	{
-		transform.GetComponent<CircleCollider2D> ().enabled = false;
-		transform.GetComponent<Rigidbody2D>().isKinematic = true;
-		transform.position = dockingPosition;
-		transform.parent = myTarget;
 		myTarget.tag = "OccupiedG_Protein";
 		transform.tag = "DockedGTP";
 		myTarget = null;
