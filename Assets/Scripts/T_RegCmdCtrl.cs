@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class T_RegCmdCtrl : MonoBehaviour {
+public class T_RegCmdCtrl : MonoBehaviour, Roam.CollectObject {
 	private GameObject active_Kinase_P2;
 	private float delay;
 	private Vector3 midpoint;
@@ -86,8 +86,9 @@ public class T_RegCmdCtrl : MonoBehaviour {
 		tag = "T_Reg";
 	}
 
-	public void Get_Kinase_P2(GameObject obj) {
+	public void GetObject (GameObject obj, string newTag) {
 		if( obj.tag == "Kinase_Phase_2") {
+			this.gameObject.tag = newTag;
 			active_Kinase_P2 = obj;
 		}
 	}

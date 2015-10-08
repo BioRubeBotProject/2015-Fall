@@ -39,6 +39,24 @@ public class Roam : MonoBehaviour {
 		return meetingPoint;
 	}
 
+	public interface CollectObject {
+		void GetObject(GameObject obj,string newTag);
+	}
+
+	public static void FindAndWait<T>(T obj, GameObject self, ref Transform myTarget, ref float delay, string changeTag) where T : MonoBehaviour, CollectObject {
+		if( obj != null && myTarget == null) {
+			delay = 0;
+			obj.GetObject(self,changeTag);
+			myTarget = obj.transform;
+		}
+		if (myTarget != null && (delay += Time.deltaTime) >= 5) {
+			
+		} 
+		else {
+			Roam.Roaming (self.gameObject);
+		}
+	}
+
 	public static GameObject FindClosest(Transform my, string objTag) {
 		float distance = Mathf.Infinity; //initialize distance to 'infinity'
 		

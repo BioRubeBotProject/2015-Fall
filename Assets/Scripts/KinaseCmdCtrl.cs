@@ -1,9 +1,10 @@
 using UnityEngine;
 using System.Collections;
 
-public class KinaseCmdCtrl : MonoBehaviour
+public class KinaseCmdCtrl : MonoBehaviour, Roam.CollectObject
 {
 	private GameObject active_G_Protein;
+	private GameObject T_Reg;
 	public GameObject Kinase_P2;
 	private Transform myTarget;
 	private Vector3 midpoint;
@@ -67,17 +68,25 @@ public class KinaseCmdCtrl : MonoBehaviour
 						active_G_Protein.GetComponent<BoxCollider2D>().enabled = true;
 					}
 					Roam.Roaming(active_G_Protein);
-					//Roam.RoamingTandem(active_G_Protein,this.gameObject,new Vector3 (0.0f, -0.70f, 0.0f));
 				}
 			}
 			timeoutForInteraction += Time.deltaTime;
 		}
 		else if ( tag == "Kinase_Phase_2" ) {
-			GameObject T_Reg = Roam.FindClosest (transform, "T_Reg");
-			if( T_Reg != null && !myTarget) {
+			if(T_Reg == null){
+				T_Reg = Roam.FindClosest (transform, "T_Reg");
+			}
+			
+			if(T_Reg != null || myTarget != null ) {
+				Roam.FindAndWait(T_Reg.GetComponent<T_RegCmdCtrl>(),this.gameObject,ref myTarget,ref delay,"T_Reg_Prep_A");
+			}
+			else {
+				Roam.Roaming(this.gameObject);
+			}
+			/*if( T_Reg != null && !myTarget) {
 				delay = 0;
 				T_Reg.tag = "T_Reg_Prep_A";
-				T_Reg.GetComponent <T_RegCmdCtrl>().Get_Kinase_P2(this.gameObject);
+				T_Reg.GetComponent <T_RegCmdCtrl>().GetObject(this.gameObject);
 				myTarget = T_Reg.transform;
 			}
 			if (myTarget && (delay += Time.deltaTime) >= 5) {
@@ -85,7 +94,7 @@ public class KinaseCmdCtrl : MonoBehaviour
 			} 
 			else {
 				Roam.Roaming (this.gameObject);
-			}
+			}*/
 		}
 	}
 
@@ -152,8 +161,9 @@ public class KinaseCmdCtrl : MonoBehaviour
 		delay = 0;
 	}
 
-	public void Get_G_Protein (GameObject obj) {
+	public void GetObject (GameObject obj, string newTag) {
 		if (obj.tag == "FreeG_Protein") {
+			this.gameObject.tag = newTag;
 			active_G_Protein = obj;
 		}
 	}
