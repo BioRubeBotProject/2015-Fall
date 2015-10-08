@@ -60,8 +60,14 @@ public class KinaseCmdCtrl : MonoBehaviour
 					Destroy (gameObject);
 				}
 				else {
-					active_G_Protein.GetComponent<BoxCollider2D>().enabled = true;
-					Roam.RoamingTandem(active_G_Protein,this.gameObject,new Vector3 (0.0f, -0.70f, 0.0f));
+					if(this.gameObject.transform.parent == null ){
+						this.gameObject.GetComponent<Rigidbody2D>().isKinematic = true;
+						this.gameObject.GetComponent<PolygonCollider2D>().enabled = false;
+						this.gameObject.transform.parent = active_G_Protein.transform;
+						active_G_Protein.GetComponent<BoxCollider2D>().enabled = true;
+					}
+					Roam.Roaming(active_G_Protein);
+					//Roam.RoamingTandem(active_G_Protein,this.gameObject,new Vector3 (0.0f, -0.70f, 0.0f));
 				}
 			}
 			timeoutForInteraction += Time.deltaTime;
