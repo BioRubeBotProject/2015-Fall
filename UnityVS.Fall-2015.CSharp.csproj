@@ -183,6 +183,7 @@
     <Compile Include="Assets\Scripts\Spawner.cs" />
     <Compile Include="Assets\Scripts\T_RegCmdCtrl.cs" />
     <Compile Include="Assets\Scripts\TimeScale.cs" />
+    <Compile Include="Assets\Scripts\TrackingProperties.cs" />
     <Compile Include="Assets\Scripts\Transparent.cs" />
     <Compile Include="Assets\Scripts\UIControl.cs" />
     <Compile Include="Assets\Scripts\Wander.cs" />

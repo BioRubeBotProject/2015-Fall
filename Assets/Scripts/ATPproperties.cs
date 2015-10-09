@@ -1,10 +1,17 @@
-﻿using UnityEngine;
+﻿// **************************************************************
+// **** Updated on 10/08/15 by Kevin Means
+// **** 1.) added public variable for rotation
+// **** 2.) rotates opposite direction for left receptor leg
+// **************************************************************
+
+using UnityEngine;
 using System.Collections;
 
 public class ATPproperties : MonoBehaviour {
 
 	#region Public Fields + Properties + Events + Delegates + Enums
-	
+
+	public int rotationalDegrees;
 	public Color ActiveColor = Color.white;
 	public bool allowMovement = true;
 	public bool isActive = true;
@@ -47,15 +54,16 @@ public class ATPproperties : MonoBehaviour {
 		}
 	}
 
-
-
-	public void dropOff()
+	public void dropOff(string name)
 	{
 		//Debug.Log("I made it here!!");
+		int rotate = rotationalDegrees;
+		if(name == "_InnerReceptorFinalLeft") { rotate = -rotationalDegrees; }
 		spin = true;
-		rotation = transform.rotation * Quaternion.AngleAxis( 180, Vector3.back ); 
+		rotation = transform.rotation * Quaternion.AngleAxis(rotate, Vector3.back); 
 		this.gameObject.GetComponent<ATPpathfinding> ().droppedOff = true;
 	}
+
 	#endregion Public Methods
 	
 	#region Private Methods
@@ -83,7 +91,6 @@ public class ATPproperties : MonoBehaviour {
 			if (Quaternion.Angle(transform.rotation,rotation)==0 ) {
 				//Debug.Log("And I spun around for awhile!!");
 				spin = false;
-
 			}
 		}
 	}
