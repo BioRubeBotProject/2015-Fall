@@ -115,25 +115,23 @@ public class T_RegCmdCtrl : MonoBehaviour, Roam.CollectObject {
 
 	private IEnumerator OnTriggerEnter2D(Collider2D other)
 	{
-		GameObject obj = other.gameObject;
-		if (obj != null) {
-			if (obj.tag == "ATP" ) { // helps prevent rogue ATP from hijacking leg
-				if(obj.GetComponent<ATPpathfinding> ().found == true) {
+		if (other != null && other.tag == "ATP" && other.GetComponent<ATPpathfinding> ().found == true) 
+    {
 					if( this.tag == "ATP_tracking" ) {
 						T_RegCmdCtrl objProps = this.GetComponent<T_RegCmdCtrl> ();
 						objProps.isActive = false;
 						objProps.GetComponent<BoxCollider2D>().enabled = false;
 						objProps.gameObject.tag = "T_Reg_With_Phosphate";
-						obj.GetComponent<CircleCollider2D> ().enabled = false; //turn off collider while dropping off phosphate
-						obj.GetComponent<ATPproperties> ().changeState (false);
-						obj.GetComponent<ATPproperties> ().dropOff (transform.name);
+						other.GetComponent<CircleCollider2D> ().enabled = false; //turn off collider while dropping off phosphate
+						other.GetComponent<ATPproperties> ().changeState (false);
+						other.GetComponent<ATPproperties> ().dropOff (transform.name);
 				
 						yield return new WaitForSeconds (3);
-						Transform tail = obj.transform.FindChild ("Tail");
+						Transform tail = other.transform.FindChild ("Tail");
 						tail.transform.SetParent (this.transform);
 						objProps.GetComponent<CircleCollider2D> ().enabled = false;			
-						obj.GetComponent<ATPproperties> ().changeState (true);
-						obj.GetComponent<CircleCollider2D> ().enabled = true;
+						other.GetComponent<ATPproperties> ().changeState (true);
+						other.GetComponent<CircleCollider2D> ().enabled = true;
 					
 						//code added to identify a 'left' receptor phosphate for G-protein docking
 						//if it is a left phosphate, G-protein must rotate to dock
@@ -142,10 +140,7 @@ public class T_RegCmdCtrl : MonoBehaviour, Roam.CollectObject {
 						tail.transform.position = tail.parent.transform.position + new Vector3 (0.0f,-0.75f,0.0f);
 
 						//objProps.havePhosphate = true;
-						StartCoroutine (Explode (obj)); //self-destruct after 3 seconds
-
-					}
-				}
+						StartCoroutine (Explode (other.gameObject)); //self-destruct after 3 seconds
 			}
 		}
 	}
