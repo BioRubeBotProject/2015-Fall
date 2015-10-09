@@ -1,4 +1,12 @@
-﻿using UnityEngine;
+﻿// **************************************************************
+// **** Updated on 10/08/15 by Kevin Means
+// **** 1.) Added condition to prevent rogue ATP from hijacking
+// ****     a receptor leg
+// **** 2.) dropOff function now takes the name of this object.
+// ****     (to know which way to rotate)
+// **************************************************************
+
+using UnityEngine;
 using System.Collections;
 
 //Updated 6/27/2015
@@ -16,22 +24,19 @@ public class ReceptorLegScript : MonoBehaviour {
 
 	private IEnumerator OnTriggerEnter2D(Collider2D other)
 	{
-		if (other.gameObject.tag == "ATP")
-		{
-
+		if (other.gameObject.tag == "ATP" && other.GetComponent<ATPpathfinding>().found == true) 
+    	{                                    // helps prevent rogue ATP from hijacking leg
 			ReceptorLegProperties objProps = (ReceptorLegProperties)this.GetComponent("ReceptorLegProperties");
-			objProps.isActive = false;
-			//turn off collider while dropping off phosphate
-			other.GetComponent<CircleCollider2D>().enabled = false;
+      		objProps.isActive = false; 
+      		other.GetComponent<CircleCollider2D>().enabled = false; //turn off collider while dropping off phosphate
 			other.GetComponent<ATPproperties>().changeState(false);
-			other.GetComponent<ATPproperties>().dropOff();
+			other.GetComponent<ATPproperties>().dropOff(transform.name);
 
 			yield return new WaitForSeconds(3);
 			Transform tail = other.transform.FindChild ("Tail");
 			tail.transform.SetParent (transform);
 			objProps.GetComponent<CircleCollider2D>().enabled = false;			
 			other.GetComponent<ATPproperties>().changeState(true);
-			//turn collider back on
 			other.GetComponent<CircleCollider2D>().enabled = true;
 			other.gameObject.tag = "Untagged";
 

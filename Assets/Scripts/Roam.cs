@@ -39,6 +39,24 @@ public class Roam : MonoBehaviour {
 		return meetingPoint;
 	}
 
+	public interface CollectObject {
+		void GetObject(GameObject obj,string newTag);
+	}
+
+	public static void FindAndWait<T>(T obj, GameObject self, ref Transform myTarget, ref float delay, string changeTag) where T : MonoBehaviour, CollectObject {
+		if( obj != null && myTarget == null) {
+			delay = 0;
+			obj.GetObject(self,changeTag);
+			myTarget = obj.transform;
+		}
+		if (myTarget != null && (delay += Time.deltaTime) >= 5) {
+			
+		} 
+		else {
+			Roam.Roaming (self.gameObject);
+		}
+	}
+
 	public static GameObject FindClosest(Transform my, string objTag) {
 		float distance = Mathf.Infinity; //initialize distance to 'infinity'
 		
@@ -60,6 +78,24 @@ public class Roam : MonoBehaviour {
 		}
 		return closestObject;
 	}/* end FindClosest */
+
+	public static bool ApproachMidpoint (GameObject obj1,GameObject obj2, bool[] midpointAchieved, Vector3 midpoint, Vector3 Offset, float Restraint) {
+		if (!midpointAchieved [0]) {
+			midpointAchieved [0] = Roam.ApproachVector (obj1, midpoint, Offset, Restraint);
+		}
+		
+		if (!midpointAchieved [1]) {
+			midpointAchieved [1] = Roam.ApproachVector (obj2, midpoint, -1 * Offset, Restraint);
+		}
+		return (midpointAchieved [0] && midpointAchieved [1]);
+	}
+
+	public static bool ApproachVector(GameObject obj, Vector3 destination, Vector3 offset, float restraint) {
+		if (Vector3.Distance (obj.transform.position, destination) > restraint) {
+			Roaming (obj);
+		}
+		return ProceedToVector (obj, destination + offset);
+	}
 
 	public static bool ProceedToVector (GameObject obj, Vector3 approachVector) {
 		float step = _speed * Time.deltaTime;
