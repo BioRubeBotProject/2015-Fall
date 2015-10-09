@@ -85,7 +85,9 @@ public class T_RegCmdCtrl : MonoBehaviour, Roam.CollectObject {
 				pos [1] = new Vector2 (ATP.transform.position.x, ATP.transform.position.y);
 				if (Vector2.Distance (pos [0], pos [1]) < 6.0f) {
 					isActive = false;
+					this.GetComponent<BoxCollider2D>().enabled = false;
 				} else { 
+					this.GetComponent<BoxCollider2D>().enabled = true;
 					isActive = true;
 				}
 
@@ -105,6 +107,7 @@ public class T_RegCmdCtrl : MonoBehaviour, Roam.CollectObject {
 			}
 			else if((delay += Time.deltaTime) > 3.5f) {
 				isActive = true;
+				this.GetComponent<BoxCollider2D>().enabled = true;
 			}
 
 		}
@@ -119,6 +122,7 @@ public class T_RegCmdCtrl : MonoBehaviour, Roam.CollectObject {
 					if(this.tag == "ATP_tracking" ) {
 						T_RegCmdCtrl objProps = this.GetComponent<T_RegCmdCtrl> ();
 						objProps.isActive = false;
+						objProps.GetComponent<BoxCollider2D>().enabled = false;
 						objProps.gameObject.tag = "T_Reg_With_Phosphate";
 						obj.GetComponent<CircleCollider2D> ().enabled = false; //turn off collider while dropping off phosphate
 						obj.GetComponent<ATPproperties> ().changeState (false);
@@ -135,6 +139,7 @@ public class T_RegCmdCtrl : MonoBehaviour, Roam.CollectObject {
 						//if it is a left phosphate, G-protein must rotate to dock
 						//NOTE: EACH PHOSPHATE ATTACHED TO A RECEPTOR IS NOW TAGGED AS "receptorPhosphate"
 						tail.transform.tag = "T_RegPhosphate";
+						tail.transform.position = tail.parent.transform.position + new Vector3 (0.0f,-0.75f,0.0f);
 
 						//objProps.havePhosphate = true;
 						StartCoroutine (Explode (obj)); //self-destruct after 3 seconds
