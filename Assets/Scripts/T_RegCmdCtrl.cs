@@ -105,7 +105,7 @@ public class T_RegCmdCtrl : MonoBehaviour, Roam.CollectObject {
 				}
 				Roam.Roaming(this.gameObject);
 			}
-			else if((delay += Time.deltaTime) > 3.5f) {
+			else if((delay += Time.deltaTime) > 3.5f && isActive == false ) {
 				isActive = true;
 				this.GetComponent<BoxCollider2D>().enabled = true;
 			}
@@ -119,7 +119,7 @@ public class T_RegCmdCtrl : MonoBehaviour, Roam.CollectObject {
 		if (obj != null) {
 			if (obj.tag == "ATP" ) { // helps prevent rogue ATP from hijacking leg
 				if(obj.GetComponent<ATPpathfinding> ().found == true) {
-					if(this.tag == "ATP_tracking" ) {
+					if( this.tag == "ATP_tracking" ) {
 						T_RegCmdCtrl objProps = this.GetComponent<T_RegCmdCtrl> ();
 						objProps.isActive = false;
 						objProps.GetComponent<BoxCollider2D>().enabled = false;
