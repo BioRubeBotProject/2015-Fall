@@ -13,9 +13,11 @@ public class KinaseCmdCtrl : MonoBehaviour, Roam.CollectObject
 	private float delay;
 	private float timeoutForInteraction;
 	public float timeoutMaxInterval;
+	public bool isActive;
 
 	// Use this for initialization
 	void Start () {
+		isActive = true;
 		myTarget = null;
 		midpointSet = false;
 		midpointAchieved [0] = false;
@@ -76,29 +78,28 @@ public class KinaseCmdCtrl : MonoBehaviour, Roam.CollectObject
 			}
 			timeoutForInteraction += Time.deltaTime;
 		}
-		else if ( tag == "Kinase_Phase_2" ) {
+		else if ( tag == "Kinase_Phase_2" && isActive) {
 			if(T_Reg == null){
 				T_Reg = Roam.FindClosest (transform, "T_Reg");
 			}
 			
-			if(T_Reg != null ) {
+			/*if(T_Reg != null ) {
 				Roam.FindAndWait(T_Reg.GetComponent<T_RegCmdCtrl>(),this.gameObject,ref myTarget,ref delay,"T_Reg_Prep_A");
 			}
 			else {
 				Roam.Roaming(this.gameObject);
-			}
-			/*if( T_Reg != null && !myTarget) {
+			}*/
+			if( T_Reg != null && !myTarget) {
 				delay = 0;
-				T_Reg.tag = "T_Reg_Prep_A";
-				T_Reg.GetComponent <T_RegCmdCtrl>().GetObject(this.gameObject);
+				T_Reg.GetComponent <T_RegCmdCtrl>().GetObject(this.gameObject,"T_Reg_Prep_A");
 				myTarget = T_Reg.transform;
 			}
 			if (myTarget && (delay += Time.deltaTime) >= 5) {
-
+				isActive = false;
 			} 
 			else {
 				Roam.Roaming (this.gameObject);
-			}*/
+			}
 		}
 	}
 
@@ -156,6 +157,7 @@ public class KinaseCmdCtrl : MonoBehaviour, Roam.CollectObject
 		midpointAchieved [0] = midpointAchieved [1] = false;
 		delay = 0;
 		timeoutForInteraction = 0.0f;
+		isActive = true;
 	}
 
 	public void resetTarget() {

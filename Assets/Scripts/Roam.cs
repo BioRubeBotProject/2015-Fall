@@ -50,7 +50,7 @@ public class Roam : MonoBehaviour {
 			myTarget = obj.transform;
 		}
 		if (myTarget != null && (delay += Time.deltaTime) >= 5) {
-			
+
 		} 
 		else {
 			Roam.Roaming (self.gameObject);

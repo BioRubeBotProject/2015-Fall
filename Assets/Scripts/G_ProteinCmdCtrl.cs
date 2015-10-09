@@ -13,6 +13,7 @@ public class G_ProteinCmdCtrl : MonoBehaviour
 	private bool roaming = false;		// is g-protein free to roam about with GTP in tow
 	private bool haveGTP = false;		// is g-protein bound to a GTP
 	private bool targeting = false;		// is g-protein targeting phosphate
+	public bool isActive = true;
 
 	private float delay = 0;			// used to delay proceed to target and undock
 	private float deltaDistance;		// // measures distance traveled to see if GTP is stuck behind something
@@ -44,58 +45,53 @@ public class G_ProteinCmdCtrl : MonoBehaviour
 		if (!haveGTP && transform.tag == "OccupiedG_Protein")
 			haveGTP = true;
 		
-		if (!targeting && !docked && !haveGTP )//Look for a target
-		{
+		if (!targeting && !docked && !haveGTP) {//Look for a target
 			openTarget = Roam.FindClosest (transform, "ReceptorPhosphate");
-			if (openTarget != null)
-			{
+			if (openTarget != null) {
 				myTarget = openTarget.transform;
 				dockingPosition = GetOffset ();
 				LockOn ();//call dibs
 			}
-		}
-		else if (!docked && !haveGTP)
-		{
+		} else if (!docked && !haveGTP) {
 			if ((delay += Time.deltaTime) > 5) {//wait 5 seconds before proceeding to target
-				docked = ProceedToTarget();
+				docked = ProceedToTarget ();
 			}
 			if (docked) {
-				ReleaseGDP();
+				ReleaseGDP ();
 			}
 		}
-		if (haveGTP && !roaming && (delay+=Time.deltaTime) > 2) {//wait 2 seconds before undocking
+		if (haveGTP && !roaming && (delay += Time.deltaTime) > 2) {//wait 2 seconds before undocking
 			Undock ();
-		}
-		else if ( haveGTP && roaming ) {
-			if(Kinase == null) {
+		} else if (haveGTP && roaming) {
+			/*if (Kinase == null) {
 				Kinase = Roam.FindClosest (transform, "Kinase");
 			}
 
-			if(Kinase != null || myTarget != null) {
-				Roam.FindAndWait(Kinase.GetComponent<KinaseCmdCtrl>(),this.gameObject,ref myTarget,ref delay,"Kinase_Prep_A");
-			}
-			else {
-				Roam.Roaming(this.gameObject);
-			}
-			/*GameObject Kinase = Roam.FindClosest (transform, "Kinase");
-			if( Kinase != null && !myTarget) {
+			if (Kinase != null || myTarget != null) {
+				Roam.FindAndWait (Kinase.GetComponent<KinaseCmdCtrl> (), this.gameObject, ref myTarget, ref delay, "Kinase_Prep_A");
+				if (myTarget != null && (delay) >= 5) {
+
+				}
+			} else {
+				Roam.Roaming (this.gameObject);
+				}*/
+			GameObject Kinase = Roam.FindClosest (transform, "Kinase");
+			if (Kinase != null && !myTarget && isActive ) {
 				delay = 0;
-				Kinase.tag = "Kinase_Prep_A";
-				Kinase.GetComponent <KinaseCmdCtrl>().Get_G_Protein(this.gameObject);
+				Kinase.GetComponent <KinaseCmdCtrl> ().GetObject (this.gameObject, "Kinase_Prep_A");
 				myTarget = Kinase.transform;
 			}
 			if (myTarget && (delay += Time.deltaTime) >= 5) {
-				
+				isActive = false;
 			} 
-			else {
+			else if ( isActive == true ) {
 				Roam.Roaming (this.gameObject);
-			}*/
-
-		}
-		else 
+			}
+		} else {
 			Roam.Roaming (this.gameObject);
-	}	
+		}
 
+	}
 
 
 /*	GetOffset determines whether a target is to the  left or right of the receptor
@@ -182,6 +178,7 @@ public class G_ProteinCmdCtrl : MonoBehaviour
 	}/* end Undock */
 
 	public void resetTarget() {
+		isActive = true;
 		myTarget = null;
 		delay = 0;
 	}
