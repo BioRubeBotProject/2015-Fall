@@ -9,7 +9,7 @@ using UnityEngine;
 using System.Collections;
 using System;
 
-public class Spawner : MonoBehaviour 
+public class Spawner : MonoBehaviour , Tutorial.SwitchOnOff
 {
 	public static bool panning = true;// unknown
 	public GameObject spawnedObject;  // for final object instantiation (after user releases mouse)
@@ -124,4 +124,14 @@ public class Spawner : MonoBehaviour
 		}
 		else { transform.position = guidePosition; }
 	}
+
+  void Tutorial.SwitchOnOff.enable () {
+    this.enabled = true;
+    this.GetComponent<Collider2D> ().enabled = true;
+  }
+
+  void Tutorial.SwitchOnOff.disable() {
+    this.enabled = false;
+    this.GetComponent<Collider2D> ().enabled = false;
+  }
 }

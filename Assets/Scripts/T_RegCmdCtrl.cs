@@ -17,6 +17,7 @@ public class T_RegCmdCtrl : MonoBehaviour, Roam.CollectObject {
 	// Use this for initialization
 	void Start () {
 		//myTarget = null;
+    this.gameObject.GetComponent<CircleCollider2D> ().enabled = false;
 		havePhosphate = false;
 		isActive = true;
 		midpointSet = false;
@@ -31,8 +32,15 @@ public class T_RegCmdCtrl : MonoBehaviour, Roam.CollectObject {
 	void FixedUpdate () {
 		if (timeoutForInteraction > timeoutMaxInterval) {
 			if(tag == "T_Reg_Prep_A" ) {
+        tag = "T_Reg";
 				reset ();
 			}
+      /*else if ( tag == "ATP_tracking" ) {
+        this.gameObject.GetComponent<CircleCollider2D> ().enabled = true;
+        timeoutForInteraction = 0.0f;
+        isActive = true;
+        tag = "ATP_tracking";
+      }*/
 		}
 
 
@@ -71,6 +79,7 @@ public class T_RegCmdCtrl : MonoBehaviour, Roam.CollectObject {
 						active_Kinase_P2.GetComponent<PolygonCollider2D> ().enabled = false;
 						active_Kinase_P2.transform.parent = this.gameObject.transform;
 						this.gameObject.GetComponent<BoxCollider2D> ().enabled = true;
+            this.gameObject.GetComponent<CircleCollider2D> ().enabled = true;
 					}
 					Roam.Roaming (this.gameObject);
 				}
@@ -79,25 +88,28 @@ public class T_RegCmdCtrl : MonoBehaviour, Roam.CollectObject {
 		} else if (tag == "ATP_tracking") { 
 			if (isActive == true) {
 				GameObject ATP = Roam.FindClosest (transform, "ATP");
-				transform.position = new Vector3 (transform.position.x, transform.position.y, 2.0f);
-				Vector2[] pos = new Vector2[2];
-				pos [0] = new Vector2 (transform.position.x, transform.position.y);
-				pos [1] = new Vector2 (ATP.transform.position.x, ATP.transform.position.y);
-				if (Vector2.Distance (pos [0], pos [1]) < 6.0f) {
-					isActive = false;
-					this.GetComponent<BoxCollider2D>().enabled = false;
-				} else { 
-					this.GetComponent<BoxCollider2D>().enabled = true;
-					isActive = true;
-				}
+        if(ATP != null) {
+  				transform.position = new Vector3 (transform.position.x, transform.position.y, 2.0f);
+  				Vector2[] pos = new Vector2[2];
+  				pos [0] = new Vector2 (transform.position.x, transform.position.y);
+  				pos [1] = new Vector2 (ATP.transform.position.x, ATP.transform.position.y);
+  				if (Vector2.Distance (pos [0], pos [1]) < 6.0f) {
+  					isActive = false;
+  					this.GetComponent<BoxCollider2D>().enabled = false;
+  				} 
+        } else { 
+          this.GetComponent<BoxCollider2D>().enabled = true;
+          isActive = true;
+        }
 
 				Roam.Roaming (this.gameObject);
 			}
+      timeoutForInteraction += Time.deltaTime;
 		} else if (tag == "T_Reg_With_Phosphate") {
 			if (isActive == true) {
 				if(active_Kinase_P2 != null) {
-					active_Kinase_P2.GetComponent<Rigidbody2D> ().isKinematic = false;
-					active_Kinase_P2.GetComponent<PolygonCollider2D> ().enabled = true;
+          this.gameObject.GetComponent<CircleCollider2D> ().enabled = false;
+          active_Kinase_P2.GetComponent<Rigidbody2D> ().isKinematic = false;
 					active_Kinase_P2.transform.parent = null;
 					active_Kinase_P2.GetComponent<KinaseCmdCtrl>().reset();
 					active_Kinase_P2.tag = "Kinase_Phase_2";
@@ -134,7 +146,7 @@ public class T_RegCmdCtrl : MonoBehaviour, Roam.CollectObject {
 						other.GetComponent<CircleCollider2D> ().enabled = true;
 					
 						//code added to identify a 'left' receptor phosphate for G-protein docking
-						//if it is a left phosphate, G-protein must rotate to dock
+					  //if it is a left phosphate, G-protein must rotate to dock
 						//NOTE: EACH PHOSPHATE ATTACHED TO A RECEPTOR IS NOW TAGGED AS "receptorPhosphate"
 						tail.transform.tag = "T_RegPhosphate";
 						tail.transform.position = tail.parent.transform.position + new Vector3 (0.0f,-0.75f,0.0f);
@@ -165,15 +177,14 @@ public class T_RegCmdCtrl : MonoBehaviour, Roam.CollectObject {
 	}
 
 	private void reset() {
-		active_Kinase_P2.GetComponent<KinaseCmdCtrl>().resetTarget();
-		this.GetComponent<BoxCollider2D>().enabled = true;
-		active_Kinase_P2.GetComponent<PolygonCollider2D>().enabled = true;
-		active_Kinase_P2 = null;
-		midpointSet = false;
-		midpointAchieved [0] = midpointAchieved [1] = false;
-		delay = 0;
-		timeoutForInteraction = 0.0f;
-		tag = "T_Reg";
+  		active_Kinase_P2.GetComponent<KinaseCmdCtrl>().resetTarget();
+  		this.GetComponent<BoxCollider2D>().enabled = true;
+  		active_Kinase_P2.GetComponent<PolygonCollider2D>().enabled = true;
+  		active_Kinase_P2 = null;
+  		midpointSet = false;
+  		midpointAchieved [0] = midpointAchieved [1] = false;
+  		delay = 0;
+  		timeoutForInteraction = 0.0f;
 	}
 
 	public void GetObject (GameObject obj, string newTag) {
