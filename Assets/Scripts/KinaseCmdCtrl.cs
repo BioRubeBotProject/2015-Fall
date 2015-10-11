@@ -13,11 +13,9 @@ public class KinaseCmdCtrl : MonoBehaviour, Roam.CollectObject
 	private float delay;
 	private float timeoutForInteraction;
 	public float timeoutMaxInterval;
-	public bool isActive;
 
 	// Use this for initialization
 	void Start () {
-		isActive = true;
 		myTarget = null;
 		midpointSet = false;
 		midpointAchieved [0] = false;
@@ -78,7 +76,7 @@ public class KinaseCmdCtrl : MonoBehaviour, Roam.CollectObject
 			}
 			timeoutForInteraction += Time.deltaTime;
 		}
-		else if ( tag == "Kinase_Phase_2" && isActive) {
+		else if ( tag == "Kinase_Phase_2") {
 			if(T_Reg == null){
 				T_Reg = Roam.FindClosest (transform, "T_Reg");
 			}
@@ -95,7 +93,7 @@ public class KinaseCmdCtrl : MonoBehaviour, Roam.CollectObject
 				myTarget = T_Reg.transform;
 			}
 			if (myTarget && (delay += Time.deltaTime) >= 5) {
-				isActive = false;
+
 			} 
 			else {
 				Roam.Roaming (this.gameObject);
@@ -157,7 +155,6 @@ public class KinaseCmdCtrl : MonoBehaviour, Roam.CollectObject
 		midpointAchieved [0] = midpointAchieved [1] = false;
 		delay = 0;
 		timeoutForInteraction = 0.0f;
-		isActive = true;
 	}
 
 	public void resetTarget() {
