@@ -41,4 +41,9 @@ public class TimeScale : MonoBehaviour {
 			Time.timeScale = Time.timeScale / 2;
 		}
 	}
+
+  public void ResetTime() {
+    saveTimeScale = 0;
+    Time.timeScale = 0;
+  }
 }

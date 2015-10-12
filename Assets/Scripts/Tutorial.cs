@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.UI;
 
 public class Tutorial : MonoBehaviour {
 
@@ -28,6 +29,7 @@ public class Tutorial : MonoBehaviour {
 
   public void startTutorial () {
     GameObject.Find ("EventSystem").GetComponent<ObjectCollection> ().Clear ();
+    GameObject.Find ("Time").GetComponent<TimeScale> ().ResetTime ();
     tutorial = true;
     currentScene = 0;
     Events [currentScene].enable ();
@@ -35,7 +37,8 @@ public class Tutorial : MonoBehaviour {
 
   public void endTutorial () {
     tutorial = false;
-
+    GameObject.Find ("Drop Down Button").GetComponent<Toggle> ().isOn = false;
+    GameObject.Find ("Time").GetComponent<TimeScale> ().ResetTime ();
     Events [currentScene].disable ();
     currentScene = -1;
     //GameObject.FindGameObjectWithTag("Canvas").GetComponent<UIControl>().ChangeScene("Models");
@@ -43,6 +46,7 @@ public class Tutorial : MonoBehaviour {
 	
   public void NextScene() {
     if (currentScene + 1 < Events.Length && currentScene >= 0) {
+      GameObject.Find ("Time").GetComponent<TimeScale> ().ResetTime ();
       Events[currentScene].disable();
       currentScene++;
       Events[currentScene].enable ();

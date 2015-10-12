@@ -34,13 +34,12 @@ public class T_RegCmdCtrl : MonoBehaviour, Roam.CollectObject {
 			if(tag == "T_Reg_Prep_A" ) {
         tag = "T_Reg";
 				reset ();
-			}
-      /*else if ( tag == "ATP_tracking" ) {
+			} else if ( tag == "ATP_tracking" ) {
         this.gameObject.GetComponent<CircleCollider2D> ().enabled = true;
         timeoutForInteraction = 0.0f;
         isActive = true;
         tag = "ATP_tracking";
-      }*/
+      }
 		}
 
 

@@ -83,10 +83,15 @@ public class Spawner : MonoBehaviour , Tutorial.SwitchOnOff
 			spawnLocation = transform.position;
 			GameObject obj = Instantiate (spawnedObject, spawnLocation, Quaternion.Euler(0f, 0f, degrees)) as GameObject;
       GameObject.Find("EventSystem").GetComponent<ObjectCollection>().Add (obj);
-			Destroy(GameObject.FindGameObjectWithTag("CellMembraneButton"));  // eliminate CM button once
-		}                                                                   // it is placed into world
-		transform.position = ReturnLocation;                                // button original position
-		transform.localRotation = ReturnRotation;                           // button original rotation
+      // eliminate CM button once it is placed into world button original position button original rotation
+      //Destroy( GameObject.FindGameObjectWithTag("CellMembraneButton"));
+      obj = GameObject.FindGameObjectWithTag("CellMembraneButton") as GameObject;
+      if(obj != null) {
+        obj.SetActive (false);
+      }
+		}                                  
+		transform.position = ReturnLocation;
+		transform.localRotation = ReturnRotation;
 		panning = true;
 	}
 	
