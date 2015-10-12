@@ -3,29 +3,29 @@ using System.Collections;
 using System.Collections.Generic;
 
 [System.Serializable]
+public struct UIObj {
+  public GameObject EventObject;
+  public bool flag;
+}
+
+[System.Serializable]
+public struct EventObj {
+  public GameObject EventObject;
+  public List<Vector3> spawnLocations;
+}
+
+[System.Serializable]
 public class EventClass : Tutorial.SwitchOnOff {
   public UIObj[] UIObjects;
-  private bool enabled = false;
+  private bool enabled;
   public EventObj[] EventObjects;
   public bool dialogue;
   public string text;
-  //private List<GameObject> spawnedObjects;
+  public Vector2 textboxPos = new Vector2();
+  //public DialogueBox textbox;
 
   void Start () {
     enabled = false;
-    //spawnedObjects = new List<GameObject>();
-  }
-
-  [System.Serializable]
-  public struct UIObj {
-    public GameObject EventObject;
-    public bool flag;
-  }
-
-  [System.Serializable]
-  public struct EventObj {
-    public GameObject EventObject;
-    public List<Vector3> spawnLocations;
   }
 
   public void enable () {
@@ -44,30 +44,30 @@ public class EventClass : Tutorial.SwitchOnOff {
     if (enabled == false) {
       for (int i = 0; i < EventObjects.Length; i++) {
         for (int j = 0; j < EventObjects[i].spawnLocations.Count; j++) {
-          //GameObject clone = 
-          GameObject.Instantiate (EventObjects [i].EventObject, EventObjects [i].spawnLocations [j], Quaternion.identity);// as GameObject;
-          //GameObject clone = Resources.Load(EventObjects[i].EventObject.name) as GameObject;
-          //spawnedObjects.Add (clone);
+          GameObject clone;
+          clone = GameObject.Instantiate (EventObjects [i].EventObject, EventObjects [i].spawnLocations [j], Quaternion.identity) as GameObject;
+          clone.name = clone.name.Replace ("(Clone)", " ");
+          clone.name = "Tutorial_" + clone.name;
+          GameObject.Find("EventSystem").GetComponent<ObjectCollection>().Add (clone);
         }
       }
     }
     enabled = true;
   }
-  
+
+
+
   public void render () {
-    //enable ();
-    if (dialogue == true) {
-       
-    }
+    enable ();
+    DialogueBox dialogueBox = GameObject.Find ("Main Camera").GetComponent<DialogueBox> ();
+    dialogueBox.dialogue = dialogue;
+    dialogueBox.text = text;
+    dialogueBox.textboxPos = textboxPos;
   }
   
   public void disable () {
     if (enabled == true) {
-      /*for (int i = 0; i < spawnedObjects.Count; i++) {
-        GameObject obj = spawnedObjects [i];
-        spawnedObjects.RemoveAt (i);
-        MonoBehaviour.Destroy (obj);
-      }*/
+      GameObject.Find("EventSystem").GetComponent<ObjectCollection>().Clear ();
     }
 
     for (int i = 0; i < UIObjects.Length; i++) {
@@ -80,6 +80,8 @@ public class EventClass : Tutorial.SwitchOnOff {
         }
       }
     }
+
+    dialogue = false;
     enabled = false;
   }
 }

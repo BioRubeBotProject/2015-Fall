@@ -161,6 +161,7 @@
     <Compile Include="Assets\Scripts\DEPRECIATED\moveKinase.cs" />
     <Compile Include="Assets\Scripts\DEPRECIATED\movePhosphate.cs" />
     <Compile Include="Assets\Scripts\DEPRECIATED\moveT_Reg.cs" />
+    <Compile Include="Assets\Scripts\DialogueBox.cs" />
     <Compile Include="Assets\Scripts\EventClass.cs" />
     <Compile Include="Assets\Scripts\ExternalReceptorProperties.cs" />
     <Compile Include="Assets\Scripts\ExtraCellularProperties.cs" />
@@ -172,6 +173,7 @@
     <Compile Include="Assets\Scripts\KeyFunction.cs" />
     <Compile Include="Assets\Scripts\KinaseCmdCtrl.cs" />
     <Compile Include="Assets\Scripts\MouseActions.cs" />
+    <Compile Include="Assets\Scripts\ObjectCollection.cs" />
     <Compile Include="Assets\Scripts\Pan.cs" />
     <Compile Include="Assets\Scripts\PanAndZoom.cs" />
     <Compile Include="Assets\Scripts\PanelOnOff.cs" />

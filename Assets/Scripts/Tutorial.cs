@@ -27,13 +27,18 @@ public class Tutorial : MonoBehaviour {
   }
 
   public void startTutorial () {
+    GameObject.Find ("EventSystem").GetComponent<ObjectCollection> ().Clear ();
     tutorial = true;
     currentScene = 0;
     Events [currentScene].enable ();
   }
 
   public void endTutorial () {
-    GameObject.FindGameObjectWithTag("Canvas").GetComponent<UIControl>().ChangeScene("Models");
+    tutorial = false;
+
+    Events [currentScene].disable ();
+    currentScene = -1;
+    //GameObject.FindGameObjectWithTag("Canvas").GetComponent<UIControl>().ChangeScene("Models");
   }
 	
   public void NextScene() {
@@ -42,7 +47,7 @@ public class Tutorial : MonoBehaviour {
       currentScene++;
       Events[currentScene].enable ();
     } else {
-      GameObject.FindGameObjectWithTag("Canvas").GetComponent<UIControl>().ChangeScene("Models");
+      endTutorial ();
     }
   }
 

@@ -81,7 +81,8 @@ public class Spawner : MonoBehaviour , Tutorial.SwitchOnOff
 		if(cellMembrane != null || spawnedObject.name == "Cell Membrane")
 		{
 			spawnLocation = transform.position;
-			Instantiate (spawnedObject, spawnLocation, Quaternion.Euler(0f, 0f, degrees));
+			GameObject obj = Instantiate (spawnedObject, spawnLocation, Quaternion.Euler(0f, 0f, degrees)) as GameObject;
+      GameObject.Find("EventSystem").GetComponent<ObjectCollection>().Add (obj);
 			Destroy(GameObject.FindGameObjectWithTag("CellMembraneButton"));  // eliminate CM button once
 		}                                                                   // it is placed into world
 		transform.position = ReturnLocation;                                // button original position

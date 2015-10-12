@@ -1,15 +1,13 @@
 ﻿<Properties>
-  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\EventClass.cs">
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="MonoDevelop.Default" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\ObjectCollection.cs">
     <Files>
-      <File FileName="Assets\Scripts\EventClass.cs" Line="48" Column="125" />
-      <File FileName="Assets\Scripts\ToggleOnOff.cs" Line="1" Column="1" />
-      <File FileName="Assets\Scripts\Tutorial.cs" Line="1" Column="1" />
-      <File FileName="Assets\Scripts\Spawner.cs" Line="1" Column="1" />
-      <File FileName="Assets\Scripts\ButtonOnOff.cs" Line="1" Column="1" />
-      <File FileName="Assets\Scripts\PanelOnOff.cs" Line="1" Column="1" />
+      <File FileName="Assets\Scripts\ObjectCollection.cs" Line="27" Column="6" />
+      <File FileName="Assets\Scripts\EventClass.cs" Line="70" Column="80" />
+      <File FileName="Assets\Scripts\Tutorial.cs" Line="30" Column="5" />
       <File FileName="Assets\Scripts\Transparent.cs" Line="1" Column="1" />
-      <File FileName="Assets\Scripts\KinaseCmdCtrl.cs" Line="1" Column="1" />
+      <File FileName="Assets\Scripts\DialogueBox.cs" Line="1" Column="1" />
+      <File FileName="Assets\Scripts\Spawner.cs" Line="85" Column="81" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

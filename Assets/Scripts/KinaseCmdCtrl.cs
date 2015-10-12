@@ -60,7 +60,8 @@ public class KinaseCmdCtrl : MonoBehaviour, Roam.CollectObject
 			}
 			if(midpointAchieved[0] && midpointAchieved[1]) {
 				if((delay += Time.deltaTime) >= 3) {
-					Instantiate(Kinase_P2,gameObject.transform.position, Quaternion.identity);
+					GameObject obj = Instantiate(Kinase_P2,gameObject.transform.position, Quaternion.identity) as GameObject;
+          GameObject.Find("EventSystem").GetComponent<ObjectCollection>().Add (obj);
 					active_G_Protein.GetComponent<G_ProteinCmdCtrl>().resetTarget();
 					Destroy (gameObject);
 				}
