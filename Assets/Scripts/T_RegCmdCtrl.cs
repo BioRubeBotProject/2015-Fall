@@ -36,6 +36,8 @@ public class T_RegCmdCtrl : MonoBehaviour, Roam.CollectObject {
 				reset ();
 			} else if ( tag == "ATP_tracking" ) {
         this.gameObject.GetComponent<CircleCollider2D> ().enabled = true;
+        this.gameObject.GetComponent<BoxCollider2D>().enabled = true;
+        this.gameObject.GetComponent<TrackingProperties>().isFound = false;
         timeoutForInteraction = 0.0f;
         isActive = true;
         tag = "ATP_tracking";
