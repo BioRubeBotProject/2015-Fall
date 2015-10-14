@@ -34,95 +34,106 @@ public class T_RegCmdCtrl : MonoBehaviour, Roam.CollectObject {
 			if(tag == "T_Reg_Prep_A" ) {
         tag = "T_Reg";
 				reset ();
-			}
-      /*else if ( tag == "ATP_tracking" ) {
+			} else if ( tag == "ATP_tracking" ) {
         this.gameObject.GetComponent<CircleCollider2D> ().enabled = true;
+        this.gameObject.GetComponent<BoxCollider2D>().enabled = true;
+        this.gameObject.GetComponent<TrackingProperties>().isFound = false;
         timeoutForInteraction = 0.0f;
         isActive = true;
         tag = "ATP_tracking";
-      }*/
+      }
 		}
 
 
 		if (tag == "T_Reg") {
-			Roam.Roaming (this.gameObject);
-		} else if (tag == "T_Reg_Prep_A") {
-			if ((delay += Time.deltaTime) >= 5.0f) {
-				if (!midpointSet) {
-					midpoint = Roam.CalcMidPoint (active_Kinase_P2, this.gameObject);
-					midpointSet = true;
-				} else if (Roam.ApproachMidpoint (active_Kinase_P2, this.gameObject, midpointAchieved, midpoint, new Vector3 (0.0f, 1.75f, 0.0f), 2.5f)) {
-					delay = 0;
-					active_Kinase_P2.GetComponent<PolygonCollider2D> ().enabled = false;
-					this.GetComponent<BoxCollider2D> ().enabled = false;
-					midpointAchieved [0] = midpointAchieved [1] = false;
-					tag = "T_Reg_Prep_B";
-				}
-			} else {
-				Roam.Roaming (this.gameObject);
-			}
-			timeoutForInteraction += Time.deltaTime;
-		} else if (tag == "T_Reg_Prep_B") {
-			if (!midpointAchieved [0] || !midpointAchieved [1]) {
-				midpointAchieved [0] = Roam.ProceedToVector (active_Kinase_P2, midpoint + new Vector3 (0.0f, 0.52f, 0.0f));
-				midpointAchieved [1] = Roam.ProceedToVector (this.gameObject, midpoint + new Vector3 (0.0f, -0.52f, 0.0f));
-			}
-			if (midpointAchieved [0] && midpointAchieved [1]) {
+      Roam.Roaming (this.gameObject);
+    } else if (tag == "T_Reg_Prep_A") {
+      if ((delay += Time.deltaTime) >= 5.0f) {
+        if (!midpointSet) {
+          midpoint = Roam.CalcMidPoint (active_Kinase_P2, this.gameObject);
+          midpointSet = true;
+        } else if (Roam.ApproachMidpoint (active_Kinase_P2, this.gameObject, midpointAchieved, midpoint, new Vector3 (0.0f, 1.75f, 0.0f), 2.5f)) {
+          delay = 0;
+          active_Kinase_P2.GetComponent<PolygonCollider2D> ().enabled = false;
+          this.GetComponent<BoxCollider2D> ().enabled = false;
+          midpointAchieved [0] = midpointAchieved [1] = false;
+          tag = "T_Reg_Prep_B";
+        }
+      } else {
+        Roam.Roaming (this.gameObject);
+      }
+      timeoutForInteraction += Time.deltaTime;
+    } else if (tag == "T_Reg_Prep_B") {
+      if (!midpointAchieved [0] || !midpointAchieved [1]) {
+        midpointAchieved [0] = Roam.ProceedToVector (active_Kinase_P2, midpoint + new Vector3 (0.0f, 0.52f, 0.0f));
+        midpointAchieved [1] = Roam.ProceedToVector (this.gameObject, midpoint + new Vector3 (0.0f, -0.52f, 0.0f));
+      }
+      if (midpointAchieved [0] && midpointAchieved [1]) {
 
-				if ((delay += Time.deltaTime) >= 3) {
-					timeoutForInteraction = 0;
-					delay = 0;
-					tag = "ATP_tracking";
-				} else {
-					if (this.gameObject.transform.parent == null) {
-						active_Kinase_P2.GetComponent<Rigidbody2D> ().isKinematic = true;
-						active_Kinase_P2.GetComponent<PolygonCollider2D> ().enabled = false;
-						active_Kinase_P2.transform.parent = this.gameObject.transform;
-						this.gameObject.GetComponent<BoxCollider2D> ().enabled = true;
+        if ((delay += Time.deltaTime) >= 3) {
+          timeoutForInteraction = 0;
+          delay = 0;
+          tag = "ATP_tracking";
+        } else {
+          if (this.gameObject.transform.parent == null) {
+            active_Kinase_P2.GetComponent<Rigidbody2D> ().isKinematic = true;
+            active_Kinase_P2.GetComponent<PolygonCollider2D> ().enabled = false;
+            active_Kinase_P2.transform.parent = this.gameObject.transform;
+            this.gameObject.GetComponent<BoxCollider2D> ().enabled = true;
             this.gameObject.GetComponent<CircleCollider2D> ().enabled = true;
-					}
-					Roam.Roaming (this.gameObject);
-				}
-			}
-			timeoutForInteraction += Time.deltaTime;
-		} else if (tag == "ATP_tracking") { 
-			if (isActive == true) {
-				GameObject ATP = Roam.FindClosest (transform, "ATP");
-        if(ATP != null) {
-  				transform.position = new Vector3 (transform.position.x, transform.position.y, 2.0f);
-  				Vector2[] pos = new Vector2[2];
-  				pos [0] = new Vector2 (transform.position.x, transform.position.y);
-  				pos [1] = new Vector2 (ATP.transform.position.x, ATP.transform.position.y);
-  				if (Vector2.Distance (pos [0], pos [1]) < 6.0f) {
-  					isActive = false;
-  					this.GetComponent<BoxCollider2D>().enabled = false;
-  				} 
+          }
+          Roam.Roaming (this.gameObject);
+        }
+      }
+      timeoutForInteraction += Time.deltaTime;
+    } else if (tag == "ATP_tracking") { 
+      if (isActive == true) {
+        GameObject ATP = Roam.FindClosest (transform, "ATP");
+        if (ATP != null) {
+          transform.position = new Vector3 (transform.position.x, transform.position.y, 2.0f);
+          Vector2[] pos = new Vector2[2];
+          pos [0] = new Vector2 (transform.position.x, transform.position.y);
+          pos [1] = new Vector2 (ATP.transform.position.x, ATP.transform.position.y);
+          if (Vector2.Distance (pos [0], pos [1]) < 6.0f) {
+            isActive = false;
+            this.GetComponent<BoxCollider2D> ().enabled = false;
+          } 
         } else { 
-          this.GetComponent<BoxCollider2D>().enabled = true;
+          this.GetComponent<BoxCollider2D> ().enabled = true;
           isActive = true;
         }
 
-				Roam.Roaming (this.gameObject);
-			}
+        Roam.Roaming (this.gameObject);
+      }
       timeoutForInteraction += Time.deltaTime;
-		} else if (tag == "T_Reg_With_Phosphate") {
-			if (isActive == true) {
-				if(active_Kinase_P2 != null) {
+    } else if (tag == "T_Reg_With_Phosphate") {
+      if (isActive == true) {
+        if (active_Kinase_P2 != null) {
           this.gameObject.GetComponent<CircleCollider2D> ().enabled = false;
+          this.tag = "T_Reg_To_Nucleus";
           active_Kinase_P2.GetComponent<Rigidbody2D> ().isKinematic = false;
-					active_Kinase_P2.transform.parent = null;
-					active_Kinase_P2.GetComponent<KinaseCmdCtrl>().reset();
-					active_Kinase_P2.tag = "Kinase_Phase_2";
-					active_Kinase_P2 = null;
-				}
-				Roam.Roaming(this.gameObject);
-			}
-			else if((delay += Time.deltaTime) > 3.5f && isActive == false ) {
-				isActive = true;
-				this.GetComponent<BoxCollider2D>().enabled = true;
-			}
+          active_Kinase_P2.transform.parent = null;
+          active_Kinase_P2.GetComponent<KinaseCmdCtrl> ().reset ();
+          active_Kinase_P2.tag = "Kinase_Phase_2";
+          active_Kinase_P2 = null;
+        }
+        Roam.Roaming (this.gameObject);
+      } else if ((delay += Time.deltaTime) > 3.5f && isActive == false) {
+        isActive = true;
+        this.GetComponent<BoxCollider2D> ().enabled = true;
+      }
+    } else if (tag == "T_Reg_To_Nucleus") {
+      Vector3 vector = GameObject.FindGameObjectWithTag ("CellMembrane").transform.GetChild(0).position;
+      this.GetComponent<BoxCollider2D>().enabled = false;
+      if (Roam.ApproachVector (this.gameObject,vector,new Vector3(0.0f,0.0f,0.0f),0.0f)) {
+        this.GetComponent<BoxCollider2D>().enabled = true;
+        this.tag = "T_Reg_Complete";
+      }
 
-		}
+    } else if (tag == "T_Reg_Complete") {
+
+      Roam.Roaming(this.gameObject);
+    }
 	}
 
 	private IEnumerator OnTriggerEnter2D(Collider2D other)

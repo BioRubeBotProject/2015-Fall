@@ -32,6 +32,7 @@ public class receptorScript : MonoBehaviour
 	{
 		yield return new WaitForSeconds(2);
 		GameObject NewReceptor = (GameObject)Instantiate(_ActiveReceptor, transform.position, transform.rotation);
+    GameObject.Find("EventSystem").GetComponent<ObjectCollection>().Add (NewReceptor);
 		this.gameObject.SetActive(false);
 	}
 	
