@@ -95,6 +95,7 @@ public class Spawner : MonoBehaviour , Tutorial.SwitchOnOff
     transform.position = ReturnLocation;
     transform.localRotation = ReturnRotation;
     this.GetComponent<Collider2D>().enabled = true;
+    isSnapped = false;
     panning = true;
   }
   
