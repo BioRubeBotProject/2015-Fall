@@ -10,6 +10,7 @@ public class Tutorial : MonoBehaviour {
 
   public interface SwitchOnOff {
     void enable();
+    void transparent(bool value);
     void disable();
   }
 

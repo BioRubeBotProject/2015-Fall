@@ -8,6 +8,7 @@
 using UnityEngine;
 using System.Collections;
 using System;
+using UnityEngine.UI;
 
 public class Spawner : MonoBehaviour , Tutorial.SwitchOnOff
 {
@@ -132,11 +133,32 @@ public class Spawner : MonoBehaviour , Tutorial.SwitchOnOff
 	}
 
   void Tutorial.SwitchOnOff.enable () {
+    if (this.GetComponent<Button> () != null) {
+      this.GetComponent<Button>().interactable = true;
+    }
     this.enabled = true;
     this.GetComponent<Collider2D> ().enabled = true;
   }
 
+  void Tutorial.SwitchOnOff.transparent(bool value) {
+    if (this.GetComponent<Button> () == null ) {
+      if (value == true) {
+        Roam.setAlpha (this.gameObject, 0.25f);
+      } else {
+        Roam.setAlpha (this.gameObject, 1.00f);
+      }
+    } else {
+      if (value == true) {
+        this.GetComponent<Button>().transition = Selectable.Transition.ColorTint;
+      }
+      else this.GetComponent<Button>().transition = Selectable.Transition.None;
+    }
+  }
+
   void Tutorial.SwitchOnOff.disable() {
+    if (this.GetComponent<Button> () != null) {
+      this.GetComponent<Button>().interactable = false;
+    }
     this.enabled = false;
     this.GetComponent<Collider2D> ().enabled = false;
   }
