@@ -60,7 +60,7 @@ public class EventClass : Tutorial.SwitchOnOff {
 
   public void render () {
     enable ();
-    DialogueBox dialogueBox = GameObject.Find ("Main Camera").GetComponent<DialogueBox> ();
+    DialogueBox dialogueBox = GameObject.Find ("DialogBox").GetComponent<DialogueBox> ();
     dialogueBox.dialogue = true;
     dialogueBox.text = text;
   }
@@ -73,19 +73,20 @@ public class EventClass : Tutorial.SwitchOnOff {
     for (int i = 0; i < UIObjects.Length; i++) {
       if (UIObjects [i].EventObject != null) {
         Tutorial.SwitchOnOff Interface = (Tutorial.SwitchOnOff)UIObjects [i].EventObject.GetComponent<Tutorial.SwitchOnOff> ();
-
-        Interface.enable ();
+        Interface.enable();
         Interface.transparent(!UIObjects[i].transparent);
-        if (UIObjects [i].flag == true) {
+        if(UIObjects[i].EventObject.name == "Drop Down panel") {
           Interface.disable ();
-        } else {
+        }
+        else {
           Interface.enable ();
         }
+
 
       }
     }
 
-    GameObject.Find ("Main Camera").GetComponent<DialogueBox> ().dialogue = false;
+    GameObject.Find ("DialogBox").GetComponent<DialogueBox> ().dialogue = false;
     enabled = false;
   }
 }

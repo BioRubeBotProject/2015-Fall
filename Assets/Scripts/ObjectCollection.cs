@@ -16,6 +16,10 @@ public class ObjectCollection : MonoBehaviour {
     Objects = Objects.Where(item => item != null).ToList();
 	}
 
+  void Update() {
+    Objects = Objects.Where(item => item != null).ToList();
+  }
+
   public void Add (GameObject obj) {
     Objects.Add (obj);
   }
