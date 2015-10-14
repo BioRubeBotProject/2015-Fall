@@ -156,6 +156,7 @@
     <Compile Include="Assets\Scripts\ATPproperties.cs" />
     <Compile Include="Assets\Scripts\ButtonOnOff.cs" />
     <Compile Include="Assets\Scripts\CellMembrane.cs" />
+    <Compile Include="Assets\Scripts\CircleEdgeCollider2D.cs" />
     <Compile Include="Assets\Scripts\DEPRECIATED\ATPscript.cs" />
     <Compile Include="Assets\Scripts\DEPRECIATED\moveGDP.cs" />
     <Compile Include="Assets\Scripts\DEPRECIATED\moveKinase.cs" />
