@@ -102,4 +102,23 @@ public class Roam : MonoBehaviour {
 		obj.transform.position = Vector3.MoveTowards (obj.transform.position, approachVector, step);
 		return (approachVector == obj.transform.position);
 	}
+
+  public static void setAlpha (GameObject obj, float alpha ){
+    if (obj.GetComponent<Renderer> () != null) {
+      Color a = obj.gameObject.GetComponent<Renderer> ().material.color;
+      // ().material.color;
+      a.a = alpha;
+    
+      obj.gameObject.GetComponent<Renderer> ().material.color = a;
+    } else if (obj.GetComponentInChildren<Renderer> () != null){
+      Color a = obj.gameObject.GetComponentInChildren<Renderer> ().material.color;
+      // ().material.color;
+      a.a = alpha;
+      
+      obj.gameObject.GetComponentInChildren<Renderer> ().material.color = a;
+      for( int i = 0; i < obj.gameObject.transform.childCount; i++ ) {
+        setAlpha (obj.gameObject.transform.GetChild(i).gameObject, alpha);
+      }
+    }
+  }
 }

@@ -10,6 +10,7 @@ public class Transparent : MonoBehaviour {
   }
 
   public void setAlpha (  ){
+   
       Color a = this.gameObject.GetComponentInChildren<Renderer> ().material.color;
       // ().material.color;
       a.a = alpha;
