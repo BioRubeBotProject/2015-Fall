@@ -6,7 +6,10 @@ public class DialogueBox : MonoBehaviour {
   public string text;
   public GUIStyle style;
   public string buttonText;
+
+  private int originalFontSize;
   void Start () {
+    originalFontSize = style.fontSize; 
   }
 
   
@@ -16,18 +19,22 @@ public class DialogueBox : MonoBehaviour {
   
   void OnGUI() {
     if(dialogue == true) {
-      Rect box = ResizeGUI(new Rect (200,400,400,125));
+      Rect box = ResizeGUI(new Rect (200,375,400,150));
       GUI.BeginGroup (box);
-      GUI.Box(new Rect(0,0,box.width,box.height),"");
+      GUI.Box(new Rect(0,0,box.width - 5,box.height - 5),"");
       string newText = text.Replace("\\n","\n");
-      GUI.Label(ResizeGUI(new Rect(0,0,box.width,box.height)),newText,style);
-      if(GUI.Button(ResizeGUI(new Rect(325,80,65,30)),buttonText)) {
+      //style.fontSize = (int)(.0085 * box.height * originalFontSize);
+      //GUI.Box(new Rect(0,0,box.width - 5,box.height - 5),newText,style);
+
+
+      GUI.Label(new Rect(0,0,box.width-10,box.height-10),newText,style);
+      if(GUI.Button(ResizeGUI(new Rect(325,118,65,20)),buttonText)) {
         GameObject.Find ("EventSystem").GetComponent<Tutorial>().NextScene();
       }
       GUI.EndGroup ();
     }
   }
-
+  
   Rect ResizeGUI(Rect _rect)
   {
     float FilScreenWidth = _rect.width / 800;
