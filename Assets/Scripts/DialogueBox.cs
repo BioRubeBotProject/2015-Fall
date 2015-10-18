@@ -1,33 +1,54 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System;
 
 public class DialogueBox : MonoBehaviour {
   public bool dialogue;
   public string text;
   public GUIStyle style;
   public string buttonText;
+
+  private int height, width;
+  private int _FontSize;
+  public int Ratio = 40;
+
+  Rect Box;
   void Start () {
+    Box = new Rect (200,375,400,150);
   }
 
   
   void Update () {
-
+    _FontSize = Mathf.Min(Screen.width, Screen.height) / Ratio;
+    style.fontSize = _FontSize;
+    Box = ResizeGUI(new Rect (200,375,400,150));
+    style.fixedHeight = Box.height;
+    style.fixedWidth = Box.width;
   }
   
   void OnGUI() {
+
     if(dialogue == true) {
-      Rect box = ResizeGUI(new Rect (200,400,400,125));
-      GUI.BeginGroup (box);
-      GUI.Box(new Rect(0,0,box.width,box.height),"");
+      GUI.BeginGroup (Box);
+
       string newText = text.Replace("\\n","\n");
-      GUI.Label(ResizeGUI(new Rect(0,0,box.width,box.height)),newText,style);
-      if(GUI.Button(ResizeGUI(new Rect(325,80,65,30)),buttonText)) {
-        GameObject.Find ("EventSystem").GetComponent<Tutorial>().NextScene();
-      }
+      GUI.Box(new Rect(0,0,Box.width - 5,Box.height - 5),"");
+
+
+      GUI.Label(new Rect(0,0,Box.width-10,Box.height-10),newText,style);
+
+        GUI.BeginGroup(ResizeGUI(new Rect(325,118,65,20)));
+          Rect button = ResizeGUI(new Rect(0,0,65,20));
+          
+          if(GUI.Button(button,buttonText)) {
+            GameObject.Find ("EventSystem").GetComponent<Tutorial>().NextScene();
+          }
+          //GUI.Label (button,buttonText,style);
+        GUI.EndGroup ();
       GUI.EndGroup ();
     }
   }
-
+  
   Rect ResizeGUI(Rect _rect)
   {
     float FilScreenWidth = _rect.width / 800;
