@@ -1,4 +1,10 @@
-﻿using UnityEngine;
+﻿// **************************************************************
+// **** Updated on 10/22/15 by Kevin Means
+// **** 1.) Changed the "T_Reg_To_NPC" code to allow the t-reg
+// ****     to track to position relative to the NPC and enter
+// ****     the cell nucleus.
+// **************************************************************
+using UnityEngine;
 using System.Collections;
 using System;
 
@@ -7,12 +13,15 @@ public class T_RegCmdCtrl : MonoBehaviour, Roam.CollectObject {
 	public ParticleSystem destructionEffect;
 
 	public bool isActive;
+  public float timeoutMaxInterval;
+  public float distanceOffset;
+
 	private float delay;
 	private Vector3 midpoint;
 	private bool[] midpointAchieved = new bool[2];
 	private bool midpointSet;
 	private float timeoutForInteraction;
-	public float timeoutMaxInterval;
+  private Vector3 ingressDistance;
 
 	// Use this for initialization
 	void Start () {
@@ -200,46 +209,40 @@ public class T_RegCmdCtrl : MonoBehaviour, Roam.CollectObject {
     else if (tag == "T_Reg_To_NPC") {
       // Find the Closest NPC and the Nucleus of the Cell
       GameObject NPC = Roam.FindClosest (this.transform, "NPC");
-      GameObject Nucleus = GameObject.FindGameObjectWithTag ("CellMembrane").transform.GetChild (0).gameObject;
+      Transform Nucleus = GameObject.FindGameObjectWithTag ("CellMembrane")
+                                    .transform.GetChild (0).gameObject.transform;
+      // Check if the NPC exists
+      if (NPC != null) 
+      { // calculate the distance and the approach vector
+        float diffX = NPC.transform.position.x - Nucleus.position.x;
+        float diffY = NPC.transform.position.y - Nucleus.position.y;
+        float distance = (float)Math.Sqrt((diffX * diffX) + (diffY * diffY));
+        float rads = (float)Math.Atan2(diffY, diffX);
 
-      // Check if both the Nucleus and the NPC exist
-      if (NPC != null && Nucleus != null) {
-        // Get the Nucleus and NPC positions in the 2D (x,y)
-        Vector2[] temp = new Vector2[2];
-        temp [0].x = NPC.transform.position.x;
-        temp [0].y = NPC.transform.position.y;
-        temp [1].x = Nucleus.transform.position.x;
-        temp [1].y = Nucleus.transform.position.y;
-
-        // Get the Distance and the Angle between the nucleus and the NPC
-        float Distance = Vector2.Distance (temp [1], temp [0]) + 5;
-        float Angle = Vector2.Angle (temp [0], temp [1]);
-
-        // Perform the Degrees to Radians Conversion
-        float rads = (float)((Math.PI / 180.0f) * (Angle + 90));
-
-        // Create a temporary variable for the vector to approach
-        Vector3 tempPosition = new Vector3 ();
-        tempPosition.x = Distance * (float)Math.Cos (rads) + temp [1].x;
-        tempPosition.y = Distance * (float)Math.Sin (rads) + temp [1].y;
+        Vector3 tempPosition = NPC.transform.position;
+        tempPosition.x = (distance + distanceOffset) * (float)Math.Cos(rads) + Nucleus.position.x;
+        tempPosition.y = (distance + distanceOffset) * (float)Math.Sin(rads) + Nucleus.position.y;
         tempPosition.z = 2;
-
+        ingressDistance = tempPosition;
+        ingressDistance.x = (distance - distanceOffset) * (float)Math.Cos(rads) + Nucleus.position.x;
+        ingressDistance.y = (distance - distanceOffset) * (float)Math.Sin(rads) + Nucleus.position.y;
         // Check and move to the tempPosition, if we have then change state to T_Reg_To_Nucleus
-        if (Roam.ApproachVector (this.gameObject, tempPosition, new Vector3 (0, 0, 0), 0)) {
+        if (Roam.ApproachVector (this.gameObject, tempPosition, new Vector3 (0, 0, 2), 0)) 
+        {
           this.tag = "T_Reg_To_Nucleus";
         }
       }
+      else { Roam.Roaming(this.gameObject); }
     } 
     // Check if Tag is T_Reg_To_Nucleus, proceed to the Nucleus
-    else if (tag == "T_Reg_To_Nucleus") {
-      // Get the Position of the Nucleus
-      Vector3 vector = GameObject.FindGameObjectWithTag ("CellMembrane").transform.GetChild(0).position;
+    else if (tag == "T_Reg_To_Nucleus") 
+    {
       // Turn off the Collider on the T_Reg so it can pass through the nucleus
       this.GetComponent<BoxCollider2D>().enabled = false;
 
       // Approach the Nucleus's midpoint
-      if (Roam.ApproachVector (this.gameObject,vector,new Vector3(0.0f,0.0f,0.0f),0.0f)) {
-        // T_Reg is in the Nucleus, Game is won
+      if (Roam.ProceedToVector (this.gameObject,ingressDistance))
+      { // T_Reg is in the Nucleus, Game is won
         this.GetComponent<BoxCollider2D>().enabled = true;
         this.tag = "T_Reg_Complete";
       }
@@ -261,14 +264,14 @@ public class T_RegCmdCtrl : MonoBehaviour, Roam.CollectObject {
       // Check if 
       if( this.tag == "ATP_tracking" ) {
       	//Get the T_RegCmdCtrl script for this T_Reg object
-        T_RegCmdCtrl objProps = this.GetComponent<T_RegCmdCtrl> ();
+        //T_RegCmdCtrl objProps = this.GetComponent<T_RegCmdCtrl> ();
 
         //Set the T_Reg to inactive and the tag to T_Reg_With_Phosphate
-        objProps.gameObject.tag = "T_Reg_With_Phosphate";
-      	objProps.isActive = false;
+        this.gameObject.tag = "T_Reg_With_Phosphate";
+        this.isActive = false;
 
         // Disable All Colliders and set the state of ATP Properties to false
-      	objProps.GetComponent<BoxCollider2D>().enabled = false;
+        this.GetComponent<BoxCollider2D>().enabled = false;
       	other.GetComponent<CircleCollider2D> ().enabled = false; //turn off collider while dropping off phosphate
       	other.GetComponent<ATPproperties> ().changeState (false);
       	other.GetComponent<ATPproperties> ().dropOff (transform.name);
@@ -277,7 +280,7 @@ public class T_RegCmdCtrl : MonoBehaviour, Roam.CollectObject {
       	yield return new WaitForSeconds (3);
       	Transform tail = other.transform.FindChild ("Tail");
       	tail.transform.SetParent (this.transform);
-      	objProps.GetComponent<CircleCollider2D> ().enabled = false;			
+        this.GetComponent<CircleCollider2D> ().enabled = false;			
       	other.GetComponent<ATPproperties> ().changeState (true);
       	other.GetComponent<CircleCollider2D> ().enabled = true;
 

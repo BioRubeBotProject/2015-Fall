@@ -1,4 +1,4 @@
-﻿// **************************************************************
+// **************************************************************
 // **** Updated on 10/08/15 by Kevin Means
 // **** 1.) Added condition to prevent rogue ATP from hijacking
 // ****     a receptor leg
@@ -32,14 +32,14 @@ public class ReceptorLegScript : MonoBehaviour {
       ReceptorLegProperties objProps = (ReceptorLegProperties)this.GetComponent("ReceptorLegProperties");
       objProps.isActive = false; 
       objProps.gameObject.tag = "Untagged";
-      other.GetComponent<CircleCollider2D>().enabled = false; //turn off collider while dropping off phosphate
+      objProps.GetComponent<CircleCollider2D>().enabled = false;
+      other.GetComponent<CircleCollider2D>().enabled = false;
       other.GetComponent<ATPproperties>().changeState(false);
       other.GetComponent<ATPproperties>().dropOff(transform.name);
       
       yield return new WaitForSeconds(3);
       Transform tail = other.transform.FindChild ("Tail");
       tail.transform.SetParent (transform);
-      objProps.GetComponent<CircleCollider2D>().enabled = false;      
       other.GetComponent<ATPproperties>().changeState(true);
       other.GetComponent<CircleCollider2D>().enabled = true;
       other.gameObject.tag = "Untagged";
