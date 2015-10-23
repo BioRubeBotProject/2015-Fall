@@ -1,4 +1,4 @@
-﻿// **************************************************************
+// **************************************************************
 // **** Updated on 10/02/15 by Kevin Means
 // **** 1.) Added commentary
 // **** 2.) Refactored code
@@ -16,7 +16,10 @@
 // **** 4.) Calculates the incident angle for use with docking
 // ****     rotation in ATPproperties "dropOff" method.
 // **************************************************************
-
+// **** Updated on 10/22/15 by Kevin Means
+// **** 1.) Added code for smooth path around the left or right
+// ****     hand side of the nucleus (when it's in the way)
+// **************************************************************
 using UnityEngine;
 using System.Collections;
 using System;                                 // for math
@@ -56,18 +59,29 @@ public class ATPpathfinding : MonoBehaviour
   // Directs the ATP to the proper dock (to rotate and dropoff tail). The ATP seeks after the circle 
   // collider of the "trackThis" object, which should be projected to the side of the object. This 
   // method will detect whether or not the "Inner Cell Wall" is in the ATP's line of sight with the
-  // collider. If it is, a path must be plotted around it.  The incident angle is also calculated
+  // collider. If it is, a path will be plotted around it. The incident angle is also calculated 
   // ("angleToRotate") in order to give the "dropOff" function a baseline angle to use for rotation.
   private void Raycasting()
   {
     Vector3 trackCollider = trackThis.GetComponent<CircleCollider2D>().bounds.center;
     RaycastHit2D collision = Physics2D.Linecast(origin.position, trackCollider);
-    
+
     if(collision.collider.name == "Inner Cell Wall")
     {
-      curveCounter = 90;                                // refuel the curve (used in below else)
-      rotate = Quaternion.LookRotation(origin.position-trackCollider, trackThis.transform.right);
-    }                                                   
+      Vector3 collisionAngle = collision.normal;
+      Vector3 direction = trackCollider - origin.position;
+      Vector3 angle = Vector3.Cross(direction, collisionAngle);
+      if(angle.z < 0)                                   // track to the right of the nucleus
+      { 
+        rotate = Quaternion.LookRotation(origin.position-trackCollider, trackThis.transform.right);
+        curveCounter = 90;
+      }
+      else                                              // track to the left of the nucleus
+      { 
+        rotate = Quaternion.LookRotation(origin.position-trackCollider, -trackThis.transform.right);
+        curveCounter = -90;
+      }
+    }
     else                                                // calculate approach vector
     {            
       float diffX = origin.position.x - trackCollider.x;
@@ -75,9 +89,9 @@ public class ATPpathfinding : MonoBehaviour
       float degrees = ((float)Math.Atan2(diffY, diffX) * (180 / (float)Math.PI) + 90);
       transform.eulerAngles = new Vector3 (0, 0, degrees - curveCounter);
       rotate = transform.localRotation;
-      if(curveCounter >= 0) { curveCounter -= 1; }      // slowly rotate until counter empty
+      if(curveCounter > 0) { curveCounter -= 1; }       // slowly rotate left until counter empty
+      else if(curveCounter < 0) {curveCounter += 1; }   // slowly rotate right until counter empty
     }
-    
     transform.localRotation = new Quaternion(0,0,rotate.z, rotate.w);
     transform.position += transform.up * Time.deltaTime * maxSpeed;
     
