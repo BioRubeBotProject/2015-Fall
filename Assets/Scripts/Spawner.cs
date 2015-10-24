@@ -12,20 +12,20 @@ using UnityEngine.UI;
 
 public class Spawner : MonoBehaviour , Tutorial.SwitchOnOff
 {
-  public static bool panning = true;// unknown
-  public float snapRadius;          // the radius for the spawned object to snap to
-  public float snapDistance;        // to rotate, object must be within this relative distance
-  public GameObject spawnedObject;  // for final object instantiation (after user releases mouse)
-  public Vector3 spawnLocation;     // for final object instantiation (after user releases mouse)
-  public Vector3 guidePosition;     // cannot change "transform.position.x,y, or z" directly
-  GameObject cellMembrane;          // the one and only cellMembrane object for this world
-  bool isSnapped;                   // has this object been snapped to a radius?
-  float x;                          // mouse x coordinate
-  float y;                          // mouse y coordinate
-  float degrees;                    // calculated # of degrees for object instantiation
-  Transform nucleus;                // the nucleus (child) of the cellMembrane
-  Vector3 ReturnLocation;           // original location of the "button"
-  Quaternion ReturnRotation;        // orginal rotaion of the "button"
+  public static bool panning = true;  // unknown
+  public float snapRadius;            // the radius for the spawned object to snap to
+  public float snapDistance;          // to rotate, object must be within this relative distance
+  public GameObject spawnedObject;    // for final object instantiation (after user releases mouse)
+  public Vector3 spawnLocation;       // for final object instantiation (after user releases mouse)
+  public Vector3 guidePosition;       // cannot change "transform.position.x,y, or z" directly
+  GameObject cellMembrane;            // the one and only cellMembrane object for this world
+  bool isSnapped;                     // has this object been snapped to a radius?
+  float x;                            // mouse x coordinate
+  float y;                            // mouse y coordinate
+  float degrees;                      // calculated # of degrees for object instantiation
+  Transform nucleus;                  // the nucleus (child) of the cellMembrane
+  Vector3 ReturnLocation;             // original location of the "button"
+  Quaternion ReturnRotation;          // orginal rotaion of the "button"
   
   //------------------------------------------------------------------------------------------------
   // This is called once per frame. 
@@ -71,18 +71,18 @@ public class Spawner : MonoBehaviour , Tutorial.SwitchOnOff
   void OnMouseDrag()
   {
     guidePosition = Camera.main.ScreenToWorldPoint 
-      (new Vector3 (x, y, spawnedObject.transform.position.z + 1));
+      (new Vector3(x, y, spawnedObject.transform.position.z + 1));
     if(cellMembrane != null || spawnedObject.name == "Cell Membrane")
     {
       if(spawnedObject.name == "_ReceptorInactive" ||
-         spawnedObject.name == "NPC") { RotatableObject(); }
+         spawnedObject.name == "NPC") { ThisIsARotatableObject(); }
       else { transform.position = guidePosition; }    // move the object to the mouse position
     }
   }
   
   //------------------------------------------------------------------------------------------------
   // Called when user releases mouse button. The "if" statement disallows object creation until the
-  // Cell Membrane is in place or if the user is trying to create the Cell Membrane. 
+  // Cell Membrane is in place or if the user is trying to create the Cell Membrane.
   void OnMouseUp()
   {
     if(cellMembrane != null || spawnedObject.name == "Cell Membrane")
@@ -104,30 +104,29 @@ public class Spawner : MonoBehaviour , Tutorial.SwitchOnOff
   
   //------------------------------------------------------------------------------------------------
   // This is called everytime the mouse drags while holding a certain object. It's purpose is to
-  // artificially rotate and place the object correctly in relation to the orbitBody. It starts with 
-  // the guidePosition (mouse position relative to the world). It finds the arc tangent of the 
-  // difference between the center points of the mouse and orbitBody. It converts the radians to 
-  // degrees and subtracts 90 to make it perpendicular to the orbitBody, then the object is rotated 
-  // to the number of degrees specified.  It then uses the distance formula to calculate how close 
-  // the object is to the center of the orbitBody. If the mouse is within snapDistance units (times 
-  // the scale of the membrane), the position of the object is snapped to snapRadius units away from
-  // the orbitBody. Once snapped, the object stays snapped.
-  void RotatableObject()
+  // artificially rotate and place the object correctly in relation to the orbitable body (in this
+  // case, either the Cell Membrane or the Nucleus). It starts with the guidePosition (mouse 
+  // position relative to the world). It finds the distance between the mouse and the respective 
+  // centers of the orbitable bodies.  If the object is within a certain distance of an orbitable 
+  // body, it will call the SnapAndRotate function this object. If they are not within a certain
+  // distance, then it is treated as any ordinary object and placed in the world at the mouse
+  // position with zero rotation.
+  void ThisIsARotatableObject()
   { 
-    float cellMemX = guidePosition.x - cellMembrane.transform.position.x;
-    float cellMemY = guidePosition.y - cellMembrane.transform.position.y;
-    float cellDistance = (float)Math.Sqrt((cellMemX * cellMemX) + (cellMemY * cellMemY));
-    float nucleusX = guidePosition.x - nucleus.transform.position.x;
-    float nucleusY = guidePosition.y - nucleus.transform.position.y;
-    float nucDistance = (float)Math.Sqrt((nucleusX * nucleusX) + (nucleusY * nucleusY));
+    float cellDistance = Vector3.Distance(guidePosition, cellMembrane.transform.position);
+    float nucDistance = Vector3.Distance(guidePosition, nucleus.transform.position);
     if(cellDistance < snapDistance * cellMembrane.transform.localScale.x &&
        cellDistance > snapRadius / 1.2)
     {
+      float cellMemX = guidePosition.x - cellMembrane.transform.position.x;
+      float cellMemY = guidePosition.y - cellMembrane.transform.position.y;
       SnapAndRotate(cellMemY, cellMemX, cellMembrane.transform);
     }
     else if(cellDistance < snapRadius / 1.3 &&
             nucDistance  < snapDistance * 1.8 * nucleus.transform.localScale.x)
     {
+      float nucleusX = guidePosition.x - nucleus.transform.position.x;
+      float nucleusY = guidePosition.y - nucleus.transform.position.y;
       SnapAndRotate(nucleusY, nucleusX, nucleus);
     }
     else
@@ -139,7 +138,10 @@ public class Spawner : MonoBehaviour , Tutorial.SwitchOnOff
   }
   //------------------------------------------------------------------------------------------------
   // Takes the calculations from the RotatableObject function and applies them to the rotatable 
-  // object.
+  // object. Finds the arc tangent of the difference between the center points of the mouse and 
+  // orbitBody (gets angle). It converts the radians to degrees and subtracts 90 to make it 
+  // perpendicular to the orbitBody, then the object is rotated to the number of degrees specified. 
+  // The position of the object is then snapped to "snapRadius" units away from the orbitBody.
   void SnapAndRotate(float diffY, float diffX, Transform orbitBody)
   {
     // Rotate:
@@ -154,30 +156,30 @@ public class Spawner : MonoBehaviour , Tutorial.SwitchOnOff
     tempPosition.y = radius * (float)Math.Sin(rads) + orbitBody.position.y;
     transform.position = tempPosition;
   }
-
+  
   //------------------------------------------------------------------------------------------------
   void Tutorial.SwitchOnOff.enable () {
     this.enabled = true;
     this.GetComponent<Collider2D> ().enabled = true;
   }
-
+  
   //------------------------------------------------------------------------------------------------
   void Tutorial.SwitchOnOff.transparent(bool value) {
-	  if (this.GetComponent<Button> () == null ) {
-	  	if (value == true) {
-	  		Roam.setAlpha (this.gameObject, 0.25f);
-	  	} else {
-	  		Roam.setAlpha (this.gameObject, 1.00f);
-	  	}
-	  } 
+    if (this.GetComponent<Button> () == null ) {
+      if (value == true) {
+        Roam.setAlpha (this.gameObject, 0.25f);
+      } else {
+        Roam.setAlpha (this.gameObject, 1.00f);
+      }
+    } 
     else {
-		  if (value == true) {
-		  	this.GetComponent<Button>().transition = Selectable.Transition.ColorTint;
-		  }
-		  else this.GetComponent<Button>().transition = Selectable.Transition.None;
-	  }
+      if (value == true) {
+        this.GetComponent<Button>().transition = Selectable.Transition.ColorTint;
+      }
+      else this.GetComponent<Button>().transition = Selectable.Transition.None;
+    }
   }
-
+  
   //------------------------------------------------------------------------------------------------
   void Tutorial.SwitchOnOff.disable() {
     this.enabled = false;
