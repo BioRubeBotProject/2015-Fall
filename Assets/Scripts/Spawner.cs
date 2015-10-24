@@ -23,6 +23,7 @@ public class Spawner : MonoBehaviour , Tutorial.SwitchOnOff
   float x;                          // mouse x coordinate
   float y;                          // mouse y coordinate
   float degrees;                    // calculated # of degrees for object instantiation
+  Transform nucleus;                // the nucleus (child) of the cellMembrane
   Vector3 ReturnLocation;           // original location of the "button"
   Quaternion ReturnRotation;        // orginal rotaion of the "button"
   
@@ -51,6 +52,10 @@ public class Spawner : MonoBehaviour , Tutorial.SwitchOnOff
     ReturnLocation = transform.position;
     ReturnRotation.eulerAngles = transform.eulerAngles;
     cellMembrane = GameObject.FindGameObjectWithTag ("CellMembrane");
+    if(cellMembrane != null) 
+    { 
+      nucleus = cellMembrane.transform.GetChild(0).gameObject.transform;
+    }
     this.GetComponent<Collider2D>().enabled = false;
   }
   
@@ -69,11 +74,8 @@ public class Spawner : MonoBehaviour , Tutorial.SwitchOnOff
       (new Vector3 (x, y, spawnedObject.transform.position.z + 1));
     if(cellMembrane != null || spawnedObject.name == "Cell Membrane")
     {
-      if(spawnedObject.name == "_ReceptorInactive") { RotateAndSnapObject(cellMembrane.transform); }
-      else if(spawnedObject.name == "NPC") 
-      { 
-        RotateAndSnapObject(cellMembrane.transform.GetChild(0).gameObject.transform); 
-      }
+      if(spawnedObject.name == "_ReceptorInactive" ||
+         spawnedObject.name == "NPC") { RotatableObject(); }
       else { transform.position = guidePosition; }    // move the object to the mouse position
     }
   }
@@ -110,49 +112,73 @@ public class Spawner : MonoBehaviour , Tutorial.SwitchOnOff
   // the object is to the center of the orbitBody. If the mouse is within snapDistance units (times 
   // the scale of the membrane), the position of the object is snapped to snapRadius units away from
   // the orbitBody. Once snapped, the object stays snapped.
-  void RotateAndSnapObject(Transform orbitBody)
+  void RotatableObject()
   { 
-    float diffX = guidePosition.x - orbitBody.position.x;
-    float diffY = guidePosition.y - orbitBody.position.y;
-    float distance = (float)Math.Sqrt((diffX * diffX) + (diffY * diffY));
-    if(distance < snapDistance * orbitBody.transform.localScale.x || isSnapped == true)
+    float cellMemX = guidePosition.x - cellMembrane.transform.position.x;
+    float cellMemY = guidePosition.y - cellMembrane.transform.position.y;
+    float cellDistance = (float)Math.Sqrt((cellMemX * cellMemX) + (cellMemY * cellMemY));
+    float nucleusX = guidePosition.x - nucleus.transform.position.x;
+    float nucleusY = guidePosition.y - nucleus.transform.position.y;
+    float nucDistance = (float)Math.Sqrt((nucleusX * nucleusX) + (nucleusY * nucleusY));
+    if(cellDistance < snapDistance * cellMembrane.transform.localScale.x &&
+       cellDistance > snapRadius / 1.2)
     {
-      // Rotate:
-      float rads = (float)Math.Atan2(diffY, diffX);
-      degrees = (rads * (180 / (float)Math.PI)) - 90;
-      transform.localRotation = Quaternion.Euler(0f, 0f, degrees);
-      
-      // Snap: 
-      float radius = snapRadius * orbitBody.localScale.x;
-      Vector3 tempPosition = guidePosition;
-      tempPosition.x = radius * (float)Math.Cos(rads) + orbitBody.position.x;
-      tempPosition.y = radius * (float)Math.Sin(rads) + orbitBody.position.y;
-      transform.position = tempPosition;
-      isSnapped = true;
+      SnapAndRotate(cellMemY, cellMemX, cellMembrane.transform);
     }
-    else { transform.position = guidePosition; }
+    else if(cellDistance < snapRadius / 1.3 &&
+            nucDistance  < snapDistance * 1.8 * nucleus.transform.localScale.x)
+    {
+      SnapAndRotate(nucleusY, nucleusX, nucleus);
+    }
+    else
+    { 
+      transform.localRotation = ReturnRotation;
+      transform.position = guidePosition; 
+      degrees = 0f;
+    }
   }
-  
+  //------------------------------------------------------------------------------------------------
+  // Takes the calculations from the RotatableObject function and applies them to the rotatable 
+  // object.
+  void SnapAndRotate(float diffY, float diffX, Transform orbitBody)
+  {
+    // Rotate:
+    float rads = (float)Math.Atan2(diffY, diffX);
+    degrees = (rads * (180 / (float)Math.PI)) - 90;
+    transform.localRotation = Quaternion.Euler(0f, 0f, degrees);
+    
+    // Snap: 
+    float radius = snapRadius * orbitBody.localScale.x;
+    Vector3 tempPosition = guidePosition;
+    tempPosition.x = radius * (float)Math.Cos(rads) + orbitBody.position.x;
+    tempPosition.y = radius * (float)Math.Sin(rads) + orbitBody.position.y;
+    transform.position = tempPosition;
+  }
+
+  //------------------------------------------------------------------------------------------------
   void Tutorial.SwitchOnOff.enable () {
     this.enabled = true;
     this.GetComponent<Collider2D> ().enabled = true;
   }
-  
-void Tutorial.SwitchOnOff.transparent(bool value) {
-	if (this.GetComponent<Button> () == null ) {
-		if (value == true) {
-			Roam.setAlpha (this.gameObject, 0.25f);
-		} else {
-			Roam.setAlpha (this.gameObject, 1.00f);
-		}
-	} else {
-		if (value == true) {
-			this.GetComponent<Button>().transition = Selectable.Transition.ColorTint;
-		}
-		else this.GetComponent<Button>().transition = Selectable.Transition.None;
-	}
-}
 
+  //------------------------------------------------------------------------------------------------
+  void Tutorial.SwitchOnOff.transparent(bool value) {
+	  if (this.GetComponent<Button> () == null ) {
+	  	if (value == true) {
+	  		Roam.setAlpha (this.gameObject, 0.25f);
+	  	} else {
+	  		Roam.setAlpha (this.gameObject, 1.00f);
+	  	}
+	  } 
+    else {
+		  if (value == true) {
+		  	this.GetComponent<Button>().transition = Selectable.Transition.ColorTint;
+		  }
+		  else this.GetComponent<Button>().transition = Selectable.Transition.None;
+	  }
+  }
+
+  //------------------------------------------------------------------------------------------------
   void Tutorial.SwitchOnOff.disable() {
     this.enabled = false;
     this.GetComponent<Collider2D> ().enabled = false;
