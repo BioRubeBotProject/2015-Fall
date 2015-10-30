@@ -49,23 +49,22 @@ public class T_RegCmdCtrl : MonoBehaviour, Roam.CollectObject {
     // The interaction was setup to occur
 		if (timeoutForInteraction > timeoutMaxInterval) {
 			// If the interaction is in the state of looking for a Kinase
-      if(tag == "T_Reg_Prep_A" || tag == "T_Reg_Prep_B") { 
-        tag = "T_Reg"; // Reset the tag to when no interaction was setup to occur
-				reset (); // Reset Components of both objects
-			} else if ( tag == "ATP_tracking" ) { // If ATP is Tracking this Transcription Regulator
-        // Reset Components of the Transcription Regulator
-        this.gameObject.GetComponent<CircleCollider2D> ().enabled = true;
-        this.gameObject.GetComponent<BoxCollider2D>().enabled = true;
-        this.gameObject.GetComponent<TrackingProperties>().isFound = false;
+              if(tag == "T_Reg_Prep_A" || tag == "T_Reg_Prep_B") { 
+                    tag = "T_Reg"; // Reset the tag to when no interaction was setup to occur
+				    reset (); // Reset Components of both objects
+			    } else if ( tag == "ATP_tracking" ) { // If ATP is Tracking this Transcription Regulator
+                // Reset Components of the Transcription Regulator
+                this.gameObject.GetComponent<CircleCollider2D> ().enabled = true;
+                this.gameObject.GetComponent<BoxCollider2D>().enabled = true;
 
-        // Reset the Timeout for Interaction
-        timeoutForInteraction = 0.0f;
+                // Reset the Timeout for Interaction
+                timeoutForInteraction = 0.0f;
 
-        // Set the T_Reg back to is Active
-        isActive = true;
-        this.tag = "ATP_tracking";
-      }
-		}
+                // Set the T_Reg back to is Active
+                isActive = true;
+                this.tag = "ATP_tracking";
+              }
+	        }
 
 
     // Default State when nothing is happening, T_Reg will just roam
@@ -111,15 +110,6 @@ public class T_RegCmdCtrl : MonoBehaviour, Roam.CollectObject {
       }
       // Check if the midpoint has been achieved
       if (midpointAchieved [0] && midpointAchieved [1]) {
-        // Check if 3 seconds have passed since midpoint was Achieved
-        if ((delay += Time.deltaTime) >= 3) {
-          // Setup state for an ATP to come and dock with T_Regulator
-          timeoutForInteraction = 0;
-          delay = 0;
-          tag = "ATP_tracking";
-        } 
-        // Roam with the Kinase
-        else {
           // Check if the kinase has a parent
           if (active_Kinase_P2.gameObject.transform.parent == null) {
             // Set the kinase's parent to be this T_Reg
@@ -133,10 +123,12 @@ public class T_RegCmdCtrl : MonoBehaviour, Roam.CollectObject {
             this.gameObject.GetComponent<BoxCollider2D> ().enabled = true;
             // Enable the Circle Collider for the ATP to approach and "Dock"
             this.gameObject.GetComponent<CircleCollider2D> ().enabled = true;
+
+            // Setup state for an ATP to come and dock with T_Regulator
+            timeoutForInteraction = 0;
+            delay = 0;
+            tag = "ATP_tracking";
           }
-          //Roam together until 3 seconds have passed
-          Roam.Roaming (this.gameObject);
-        }
       }
       //Increment the timeout variable by delta time
       timeoutForInteraction += Time.deltaTime;
@@ -147,6 +139,7 @@ public class T_RegCmdCtrl : MonoBehaviour, Roam.CollectObject {
       if (isActive == true) {
         // Find the Closest ATP
         GameObject ATP = Roam.FindClosest (transform, "ATP");
+
         // Check if the Closest ATP is not null, therefore one exists
         if (ATP != null) {
           // Set the z position for the T_Regulator to be off the 0.0f
@@ -167,12 +160,6 @@ public class T_RegCmdCtrl : MonoBehaviour, Roam.CollectObject {
             this.GetComponent<BoxCollider2D> ().enabled = false;
           } 
         } 
-        // Else turn the Collider back on because the ATP has disappeared
-        else { 
-          this.GetComponent<BoxCollider2D> ().enabled = true;
-          isActive = true;
-        }
-
         // Roam while the T_Reg is still active
         Roam.Roaming (this.gameObject);
       }

@@ -8,7 +8,6 @@ public class DialogueBox : MonoBehaviour {
   public GUIStyle style;
   public string buttonText;
 
-  private int height, width;
   private int _FontSize;
   public int Ratio = 40;
 
