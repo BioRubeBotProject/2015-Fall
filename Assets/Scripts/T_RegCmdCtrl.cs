@@ -3,6 +3,9 @@
 // **** 1.) Changed the "T_Reg_To_NPC" code to allow the t-reg
 // ****     to track to position relative to the NPC and enter
 // ****     the cell nucleus.
+// **** 2.) Added Physics.IgnoreCollision call so that the T-Reg
+// ****     will not pass through the Cell Membrane if the user
+// ****     mistakenly puts the NPC there.
 // **************************************************************
 using UnityEngine;
 using System.Collections;
@@ -22,6 +25,7 @@ public class T_RegCmdCtrl : MonoBehaviour, Roam.CollectObject {
 	private bool midpointSet;
 	private float timeoutForInteraction;
   private Vector3 ingressDistance;
+  private GameObject Nucleus;
 
 	// Use this for initialization
 	void Start () {
@@ -33,6 +37,7 @@ public class T_RegCmdCtrl : MonoBehaviour, Roam.CollectObject {
 		active_Kinase_P2 = null;
 		delay = 0.0f;
 		timeoutForInteraction = 0.0f;
+    Nucleus = GameObject.FindGameObjectWithTag("CellMembrane").transform.GetChild(0).gameObject;
 	}
 	
 	// Update is called once per frame
@@ -206,26 +211,24 @@ public class T_RegCmdCtrl : MonoBehaviour, Roam.CollectObject {
       }
     } 
     // If tag is T_Reg_To_NPC, then start moving toward the nearest NPC;
-    else if (tag == "T_Reg_To_NPC") {
-      // Find the Closest NPC and the Nucleus of the Cell
+    else if (tag == "T_Reg_To_NPC") 
+    {
       GameObject NPC = Roam.FindClosest (this.transform, "NPC");
-      Transform Nucleus = GameObject.FindGameObjectWithTag ("CellMembrane")
-                                    .transform.GetChild (0).gameObject.transform;
-      // Check if the NPC exists
+      Transform nucTransform = Nucleus.transform;
       if (NPC != null) 
       { // calculate the distance and the approach vector
-        float diffX = NPC.transform.position.x - Nucleus.position.x;
-        float diffY = NPC.transform.position.y - Nucleus.position.y;
+        float diffX = NPC.transform.position.x - nucTransform.position.x;
+        float diffY = NPC.transform.position.y - nucTransform.position.y;
         float distance = (float)Math.Sqrt((diffX * diffX) + (diffY * diffY));
         float rads = (float)Math.Atan2(diffY, diffX);
 
         Vector3 tempPosition = NPC.transform.position;
-        tempPosition.x = (distance + distanceOffset) * (float)Math.Cos(rads) + Nucleus.position.x;
-        tempPosition.y = (distance + distanceOffset) * (float)Math.Sin(rads) + Nucleus.position.y;
+        tempPosition.x = (distance + distanceOffset) * (float)Math.Cos(rads) + nucTransform.position.x;
+        tempPosition.y = (distance + distanceOffset) * (float)Math.Sin(rads) + nucTransform.position.y;
         tempPosition.z = 2;
         ingressDistance = tempPosition;
-        ingressDistance.x = (distance - distanceOffset) * (float)Math.Cos(rads) + Nucleus.position.x;
-        ingressDistance.y = (distance - distanceOffset) * (float)Math.Sin(rads) + Nucleus.position.y;
+        ingressDistance.x = (distance - distanceOffset) * (float)Math.Cos(rads) + nucTransform.position.x;
+        ingressDistance.y = (distance - distanceOffset) * (float)Math.Sin(rads) + nucTransform.position.y;
         // Check and move to the tempPosition, if we have then change state to T_Reg_To_Nucleus
         if (Roam.ApproachVector (this.gameObject, tempPosition, new Vector3 (0, 0, 2), 0)) 
         {
@@ -238,15 +241,14 @@ public class T_RegCmdCtrl : MonoBehaviour, Roam.CollectObject {
     else if (tag == "T_Reg_To_Nucleus") 
     {
       // Turn off the Collider on the T_Reg so it can pass through the nucleus
-      this.GetComponent<BoxCollider2D>().enabled = false;
-
+      Physics2D.IgnoreCollision(Nucleus.GetComponent<Collider2D>(), GetComponent<Collider2D>(), true);
+    
       // Approach the Nucleus's midpoint
       if (Roam.ProceedToVector (this.gameObject,ingressDistance))
       { // T_Reg is in the Nucleus, Game is won
-        this.GetComponent<BoxCollider2D>().enabled = true;
+        Physics2D.IgnoreCollision(Nucleus.GetComponent<Collider2D>(), GetComponent<Collider2D>(), false);
         this.tag = "T_Reg_Complete";
       }
-
     } 
     // Check if Tag is T_Reg_Complete,
     else if (tag == "T_Reg_Complete") {
