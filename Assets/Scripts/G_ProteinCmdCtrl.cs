@@ -17,12 +17,12 @@ public class G_ProteinCmdCtrl : MonoBehaviour
 
 	private float delay = 0;			// used to delay proceed to target and undock
 	private float deltaDistance;		// // measures distance traveled to see if GTP is stuck behind something
-	private float randomX, randomY;		// random number between MIN/MAX_X and MIN/MAX_Y
+	//private float randomX, randomY;		// random number between MIN/MAX_X and MIN/MAX_Y
 
 	private Transform myTarget; 		// = openTarget.transform
 	private GameObject openTarget;		// a 'ReceptorPhosphate' (target) object
 	
-	private Vector2 randomDirection;	// new direction vector
+	//private Vector2 randomDirection;	// new direction vector
 	
 	private Vector3 lastPosition;		// previous position while moving to phosphate
 	private Vector3 dockingPosition;	// where to station the g-protein at docking

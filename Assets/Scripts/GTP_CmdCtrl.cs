@@ -11,12 +11,12 @@ public class GTP_CmdCtrl: MonoBehaviour
 	
 	private float delay = 0f;
 	private float deltaDistance;		// measures distance traveled to see if GTP is stuck behind something
-	private float randomX, randomY;		// random number between MIN/MAX_X and MIN/MAX_Y
+	//private float randomX, randomY;		// random number between MIN/MAX_X and MIN/MAX_Y
 	
 	private GameObject openTarget;		// 	found docked g-protein
 	private Transform myTarget;			// = openTarget.transform
 	
-	private Vector2 randomDirection;	// new direction vector
+	//private Vector2 randomDirection;	// new direction vector
 	private Vector3 dockingPosition;	// myTarget position +/- offset
 	private Vector3 lastPosition;		// previous position while moving to docked G-protein
 

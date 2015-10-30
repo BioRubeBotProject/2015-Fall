@@ -3,7 +3,7 @@ using System.Collections;
 
 public class movePhosphate : MonoBehaviour
 {
-	private Vector2 randomDirection;	//new direction vector
+	//private Vector2 randomDirection;	//new direction vector
 	public float maxX, maxY, minX, minY;//min/max vector values
 	private float randomX, randomY;		//random number between minX maxX and minY and maxY
 
